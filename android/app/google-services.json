@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "362799203793",
+    "firebase_url": "https://sterilizer.firebaseio.com",
+    "project_id": "sterilizer",
+    "storage_bucket": "sterilizer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362799203793:android:b27d98d186b628bc84ccf0",
+        "android_client_info": {
+          "package_name": "com.ibis.sterilizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362799203793-r3dtrmaq7p87n8ffs5v063uv11nh8e5m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMIXlHmsxXiAMhFK3_vbyRMVMFFJmOArE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362799203793-r3dtrmaq7p87n8ffs5v063uv11nh8e5m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
