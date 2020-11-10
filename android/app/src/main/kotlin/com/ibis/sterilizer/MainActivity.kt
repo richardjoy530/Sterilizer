@@ -34,7 +34,7 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             when (call.method) {
                 "permission" -> {
-                    permissionHandler(result,call)
+                    permissionHandler(result, call)
                 }
                 "register" -> {
                     register(result, call)
@@ -42,7 +42,7 @@ class MainActivity : FlutterActivity() {
                 "connectHome" -> {
                     connectHome(result, call)
                 }
-                "ssid"->{
+                "ssid" -> {
                     getSSID(result, call)
                 }
             }
@@ -74,7 +74,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun getSSID(result: MethodChannel.Result, call: MethodCall){
+    private fun getSSID(result: MethodChannel.Result, call: MethodCall) {
         val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         result.success(wifiManager.connectionInfo.ssid)
     }

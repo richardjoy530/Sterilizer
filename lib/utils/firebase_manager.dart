@@ -1,6 +1,8 @@
 import 'package:Sterilizer/model/data.dart';
 import 'package:firebase_database/firebase_database.dart';
-List<dynamic> localStates = [];
+
+String localStates = "";
+
 class FirebaseManager {
   DatabaseReference db;
 
@@ -8,25 +10,19 @@ class FirebaseManager {
     db = FirebaseDatabase.instance.reference();
   }
 
-  add(Map map,String name) {
-    db.child(userId).child(name).set(map);
+  add() {
+    db.child(userId).child("mode").set(-1);
+    db.child(userId).child("uv").set("OFF");
   }
 
-  Future<void> addToggles() async {
-    var state= await db.reference().child(userId).child("state").once();
-    if(state.value==null){
-      List<dynamic> states = [1];
-      db.child(userId).child("state").set(states);
-    }
-    else{
-      List<dynamic> fireStates = state.value;
-      localStates.add(1);
-      localStates.addAll(fireStates);
-      db.child(userId).child("state").set(localStates).then((value) {
-        localStates=[];
-        return;
-      });
-    }
+  Future<void> setMode(int mode) async {
+    db.child(userId).child("mode").set(mode);
   }
 
+  switchUV(bool uv) async {
+    if (uv)
+      db.child(userId).child("uv").set("ON");
+    else
+      db.child(userId).child("uv").set("OFF");
+  }
 }

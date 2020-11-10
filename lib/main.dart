@@ -13,7 +13,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Sterilizer',
-        theme: ThemeData(fontFamily: 'Roboto',accentColor: Colors.black),
+        theme: ThemeData(fontFamily: 'Roboto', accentColor: Colors.black),
         home: Loading());
   }
 }
