@@ -18,6 +18,7 @@ class DevicePage extends StatefulWidget {
 class _DevicePageState extends State<DevicePage> {
   String anim = "idle";
   Timer timer;
+  int _mode = 0;
 
   bool uv = false;
 
@@ -50,63 +51,102 @@ class _DevicePageState extends State<DevicePage> {
               ),
             ),
           ),
-          Column(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Listener(
-                onPointerDown: (event) {
-                  setState(() {
-                    anim = "hold";
-                  });
-                  timer = Timer.periodic(Duration(seconds: 1), (value) {
-                    if (anim == "hold") device.toggleMode();
-                    anim = "idle";
-                  });
-                },
-                onPointerUp: (event) {
-                  timer.cancel();
-                  setState(() {
-                    anim = "idle";
-                  });
-                },
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  child: FlareActor("assets/mode2.flr",
-                      alignment: Alignment.center,
-                      fit: BoxFit.contain,
-                      animation: anim),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                ),
-                margin: EdgeInsets.all(10),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.wb_twighlight,
-                    color: Colors.black,
+              RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  title: Text('Enable UV'),
-                  subtitle: Text("Tap to enable disinfection with UV"),
-                  trailing: Container(
-                    width: 60,
-                    child: FlareActor("assets/Toggle.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.contain,
-                        animation: uv == true ? "on" : "off"),
+                  color: _mode == 1 ? Colors.grey[300] : Color(0xff060606),
+                  child: Text(
+                    "Mode 1",
+                    style: TextStyle(
+                        color: _mode == 1 ? Colors.black : Colors.white),
                   ),
-                  onTap: () {
+                  onPressed: () {
+                    device.toggleMode(1);
                     setState(() {
-                      uv = !uv;
-                      device.switchUV(uv);
+                      _mode = 1;
                     });
-                  },
-                ),
-              ),
+                  }),
+              RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: _mode == 2 ? Colors.grey[300] : Color(0xff060606),
+                  child: Text(
+                    "Mode 2",
+                    style: TextStyle(
+                        color: _mode == 2 ? Colors.black : Colors.white),
+                  ),
+                  onPressed: () {
+                    device.toggleMode(2);
+                    setState(() {
+                      _mode = 2;
+                    });
+                  }),
+              RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: _mode == 3 ? Colors.grey[300] : Color(0xff060606),
+                  child: Text(
+                    "Mode 3",
+                    style: TextStyle(
+                        color: _mode == 3 ? Colors.black : Colors.white),
+                  ),
+                  onPressed: () {
+                    device.toggleMode(3);
+                    setState(() {
+                      _mode = 3;
+                    });
+                  }),
+              RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: _mode == 4 ? Colors.grey[300] : Color(0xff060606),
+                  child: Text(
+                    "Mode 4",
+                    style: TextStyle(
+                        color: _mode == 4 ? Colors.black : Colors.white),
+                  ),
+                  onPressed: () {
+                    device.toggleMode(4);
+                    setState(() {
+                      _mode = 4;
+                    });
+                  }),
             ],
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.all(Radius.circular(30.0)),
+            ),
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              leading: Icon(
+                Icons.wb_twighlight,
+                color: Colors.black,
+              ),
+              title: Text('Enable UV'),
+              subtitle: Text("Tap to enable disinfection with UV"),
+              trailing: Container(
+                width: 60,
+                child: FlareActor("assets/Toggle.flr",
+                    alignment: Alignment.center,
+                    fit: BoxFit.contain,
+                    animation: uv == true ? "on" : "off"),
+              ),
+              onTap: () {
+                setState(() {
+                  uv = !uv;
+                  device.switchUV(uv);
+                });
+              },
+            ),
           )
         ],
       ),
