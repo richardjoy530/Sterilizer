@@ -12,34 +12,26 @@ const String DEVICE_SSID = 'razecov';
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
 String homeName = 'My Home';
-String userId = "00001";
-List<Device> deviceList=[];
+String userId = "00003";
+List<Device> deviceList = [];
 
 class Device {
   String name;
   bool power;
   String room;
-  Device(this.name,this.power,this.room) {
-    final Map<String, dynamic> deviceData = {
-      "room": room,
-      "power": power,
-    };
+
+  Device(this.name, this.power, this.room){
     var fire = FirebaseManager();
-    fire.add(deviceData, name);
+    fire.add();
   }
 
-  update(){
-    final Map<String, dynamic> deviceData = {
-      "room": room,
-      "power": power,
-    };
+  toggleMode(int mode) async {
     var fire = FirebaseManager();
-    fire.add(deviceData, name);
+    await fire.setMode(mode);
   }
-
-  toggleMode() async {
+  switchUV(bool uv) async {
     var fire = FirebaseManager();
-    await fire.addToggles();
+    await fire.switchUV(uv);
   }
 
 }

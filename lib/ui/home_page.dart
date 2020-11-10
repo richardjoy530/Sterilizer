@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:Sterilizer/ui/change_wifi.dart';
+import 'package:Sterilizer/ui/device_page.dart';
 import 'package:flutter/material.dart';
 import 'package:wifi/wifi.dart';
 
@@ -422,8 +423,12 @@ class _GeneralState extends State<General> {
                           ),
                           title:
                               Text('Ibis Sterilizer ${deviceList[index].name}'),
-                          onTap: () async {
-                            await deviceList[index].toggleMode();
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DevicePage(deviceList[index])));
                           },
                         ),
                       );
