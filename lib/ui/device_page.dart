@@ -18,9 +18,6 @@ class DevicePage extends StatefulWidget {
 class _DevicePageState extends State<DevicePage> {
   String anim = "idle";
   Timer timer;
-  int _mode = 0;
-
-  bool uv = false;
 
   @override
   void initState() {
@@ -45,7 +42,7 @@ class _DevicePageState extends State<DevicePage> {
             margin: EdgeInsets.only(top: 30, bottom: 30),
             child: ListTile(
               title: Text(
-                "Sterilizer $userId",
+                "Sterilizer ${device.name}",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 25),
               ),
@@ -58,64 +55,60 @@ class _DevicePageState extends State<DevicePage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  color: _mode == 1 ? Colors.grey[300] : Color(0xff060606),
+                  color: device.mode == 1 ? Colors.grey[300] : Color(0xff060606),
                   child: Text(
                     "Mode 1",
                     style: TextStyle(
-                        color: _mode == 1 ? Colors.black : Colors.white),
+                        color: device.mode == 1 ? Colors.black : Colors.white),
                   ),
                   onPressed: () {
-                    device.toggleMode(1);
                     setState(() {
-                      _mode = 1;
+                      device.toggleMode(1);
                     });
                   }),
               RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  color: _mode == 2 ? Colors.grey[300] : Color(0xff060606),
+                  color: device.mode == 2 ? Colors.grey[300] : Color(0xff060606),
                   child: Text(
                     "Mode 2",
                     style: TextStyle(
-                        color: _mode == 2 ? Colors.black : Colors.white),
+                        color: device.mode == 2 ? Colors.black : Colors.white),
                   ),
                   onPressed: () {
-                    device.toggleMode(2);
                     setState(() {
-                      _mode = 2;
+                      device.toggleMode(2);
                     });
                   }),
               RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  color: _mode == 3 ? Colors.grey[300] : Color(0xff060606),
+                  color: device.mode == 3 ? Colors.grey[300] : Color(0xff060606),
                   child: Text(
                     "Mode 3",
                     style: TextStyle(
-                        color: _mode == 3 ? Colors.black : Colors.white),
+                        color: device.mode == 3 ? Colors.black : Colors.white),
                   ),
                   onPressed: () {
-                    device.toggleMode(3);
                     setState(() {
-                      _mode = 3;
+                      device.toggleMode(3);
                     });
                   }),
               RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  color: _mode == 4 ? Colors.grey[300] : Color(0xff060606),
+                  color: device.mode == 4 ? Colors.grey[300] : Color(0xff060606),
                   child: Text(
                     "Mode 4",
                     style: TextStyle(
-                        color: _mode == 4 ? Colors.black : Colors.white),
+                        color: device.mode == 4 ? Colors.black : Colors.white),
                   ),
                   onPressed: () {
-                    device.toggleMode(4);
                     setState(() {
-                      _mode = 4;
+                      device.toggleMode(4);
                     });
                   }),
             ],
@@ -138,12 +131,12 @@ class _DevicePageState extends State<DevicePage> {
                 child: FlareActor("assets/Toggle.flr",
                     alignment: Alignment.center,
                     fit: BoxFit.contain,
-                    animation: uv == true ? "on" : "off"),
+                    animation: device.uv == true ? "on" : "off"),
               ),
               onTap: () {
                 setState(() {
-                  uv = !uv;
-                  device.switchUV(uv);
+                  device.uv = !device.uv;
+                  device.switchUV(device.uv);
                 });
               },
             ),
