@@ -10,19 +10,33 @@ class FirebaseManager {
     db = FirebaseDatabase.instance.reference();
   }
 
-  add() {
-    db.child(userId).child("mode").set(-1);
-    db.child(userId).child("uv").set("OFF");
+  add(int id) {
+    db.child(id.toString()).child("mode").set(-1);
+    db.child(id.toString()).child("uv").set("OFF");
   }
 
-  Future<void> setMode(int mode) async {
-    db.child(userId).child("mode").set(mode);
+  Future<void> setMode(int id, int mode) async {
+    db.child(id.toString()).child("mode").set(mode);
   }
 
-  switchUV(bool uv) async {
+  switchUV(int id, bool uv) async {
     if (uv)
-      db.child(userId).child("uv").set("ON");
+      db.child(id.toString()).child("uv").set("ON");
     else
-      db.child(userId).child("uv").set("OFF");
+      db.child(id.toString()).child("uv").set("OFF");
+  }
+
+  sync(Device device) {
+    db
+        .child(device.id.toString())
+        .child("uv")
+        .once()
+        .then((value) => device.uv = value.value=="OFF"?false:true);
+    db
+        .child(device.id.toString())
+        .child("mode")
+        .once()
+        .then((value) => device.mode = value.value);
+    return device;
   }
 }

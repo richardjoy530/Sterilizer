@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wifi/wifi.dart';
+
 import '../model/data.dart';
 import 'home_page.dart';
 
@@ -31,6 +32,11 @@ class _LoadingState extends State<Loading> {
 
   load() async {
     prefs = await SharedPreferences.getInstance();
+    var numOfDevices = prefs.getInt("num_devices") ?? 0;
+    if (numOfDevices > 0) {
+      deviceList.add(Device.fromMemory(prefs: prefs));
+    }
+
     final bool result = await platform.invokeMethod('permission');
     if (result == true) {
       String pass = prefs.getString('homePass');

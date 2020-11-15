@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Sterilizer/ui/change_wifi.dart';
 import 'package:Sterilizer/ui/device_page.dart';
 import 'package:flutter/material.dart';
@@ -221,11 +222,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   onMenuPressed(BuildContext context) {
-    var device = Device(tap.toString(), true, "Dinning Room");
-    tap++;
-    setState(() {
-      deviceList.add(device);
-    });
     showModalBottomSheet(
         backgroundColor: Colors.white,
         isScrollControlled: true,
@@ -281,6 +277,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   addDevice() async {
+    var device = Device(name: "Purifier", uv: false, mode: 0);
+    setState(() {
+      deviceList.add(device);
+    });
     print(homeSSID);
     print(homePass);
     final Map<String, dynamic> cred = {
