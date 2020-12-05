@@ -11,12 +11,9 @@ class FirebaseManager {
   }
 
   add(int id) {
-    db.child(id.toString()).child("mode").set(-1);
+    db.child(id.toString()).child("motionDetected").set(0);
     db.child(id.toString()).child("uv").set("OFF");
-  }
-
-  Future<void> setMode(int id, int mode) async {
-    db.child(id.toString()).child("mode").set(mode);
+    db.child(id.toString()).child("appConnected").set(1);
   }
 
   switchUV(int id, bool uv) async {
@@ -32,11 +29,6 @@ class FirebaseManager {
         .child("uv")
         .once()
         .then((value) => device.uv = value.value=="OFF"?false:true);
-    db
-        .child(device.id.toString())
-        .child("mode")
-        .once()
-        .then((value) => device.mode = value.value);
     return device;
   }
 }

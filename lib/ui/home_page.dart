@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    context = this.context;
     pageController = PageController(initialPage: 0);
     passwordController = TextEditingController();
     pageController.addListener(() {
@@ -277,7 +278,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   addDevice() async {
-    var device = Device(name: "Purifier", uv: false, mode: 0);
+    var device = Device(name: "Purifier", uv: false);
     setState(() {
       deviceList.add(device);
     });
