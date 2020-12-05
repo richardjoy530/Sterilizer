@@ -16,6 +16,7 @@ class _ChangeWifiState extends State<ChangeWifi> {
 
   @override
   void initState() {
+    context = this.context;
     tempSSID = "New Wifi";
     passwordController = TextEditingController();
     super.initState();

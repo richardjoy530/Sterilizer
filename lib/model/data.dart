@@ -2,9 +2,12 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:Sterilizer/utils/firebase_manager.dart';
+import 'package:Sterilizer/utils/popups.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+BuildContext context;
 String homeSSID;
 String homePass;
 SharedPreferences prefs;
@@ -19,21 +22,30 @@ class Device {
   String name;
   int id;
   bool uv;
-  int mode;
+  bool motionDetected = false;
+  bool appConnected=true;
+  FirebaseManager firebaseManager;
+  Null Function() state;
 
-  Device({this.name, this.uv, this.mode}) {
+  Device({this.name, this.uv}) {
     id = Random().nextInt(5000);
-    var fire = FirebaseManager();
-    fire.add(id);
+    firebaseManager = FirebaseManager();
+    firebaseManager.add(id);
     saveToMemory();
     listenChanges();
   }
+
+  setTheState(Null Function() param0){
+    state = param0;
+  }
+
 
   Device.fromMemory({SharedPreferences prefs}) {
     name = prefs.getString("device_name");
     id = prefs.getInt("device_id");
     uv = prefs.getBool("device_uv");
-    mode = prefs.getInt("device_mode");
+    firebaseManager = FirebaseManager();
+    firebaseManager.db.child(id.toString()).child("appConnected").set(1);
     update();
     listenChanges();
   }
@@ -43,31 +55,28 @@ class Device {
     prefs.setString("device_name", name);
     prefs.setInt("device_id", id);
     prefs.setBool("device_uv", uv);
-    prefs.setInt("device_mode", mode);
   }
 
   update() async {
-    var fire = FirebaseManager();
     print(uv);
-    await fire.sync(this);
+    await firebaseManager.sync(this);
     print([uv, "After syncing"]);
   }
 
   listenChanges() {
-    var fire = FirebaseManager();
-    fire.db.child(id.toString()).onChildChanged.listen((event) {
-      print(event.snapshot.value);
+    firebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
+      print({[event.snapshot.key,event.snapshot.value]});
+      firebaseManager.db.child(id.toString()).child("appConnected").set(1);
+      if(event.snapshot.key=="motionDetected"&&event.snapshot.value==1) {
+        motionDetected = true;
+        motionDetectedPopUp();
+        switchUV(false);
+        state.call();
+      }
     });
   }
 
-  toggleMode(int mode) async {
-    this.mode=mode;
-    var fire = FirebaseManager();
-    await fire.setMode(id,mode);
-  }
-
   switchUV(bool uv) async {
-    var fire = FirebaseManager();
-    await fire.switchUV(id,uv);
+    await firebaseManager.switchUV(id,uv);
   }
 }
