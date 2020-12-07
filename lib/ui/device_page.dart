@@ -17,20 +17,25 @@ class DevicePage extends StatefulWidget {
 
 class _DevicePageState extends State<DevicePage> {
   String anim = "idle";
+  String toggle = "on";
   Timer timer;
 
   @override
   void initState() {
     super.initState();
-    context = this.context;
+    toggle = device.uv == true ? "on" : "off";
+    contextStack.add(this.context);
     device.setTheState((){ setState(() {
+      toggle = "off";
     }); });
   }
 
   @override
   void dispose() {
-    super.dispose();
+    print("DevicePage disposed");
     timer?.cancel();
+    contextStack.remove(this.context);
+    super.dispose();
   }
 
   Device get device => widget.device;
@@ -69,12 +74,13 @@ class _DevicePageState extends State<DevicePage> {
                 child: FlareActor("assets/Toggle.flr",
                     alignment: Alignment.center,
                     fit: BoxFit.contain,
-                    animation: device.uv == true ? "on" : "off"),
+                    animation:toggle),
               ),
               onTap: () {
                 setState(() {
                   device.uv = !device.uv;
                   device.switchUV(device.uv);
+                  toggle = device.uv == true ? "on" : "off";
                 });
               },
             ),

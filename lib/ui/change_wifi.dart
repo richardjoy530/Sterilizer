@@ -16,8 +16,8 @@ class _ChangeWifiState extends State<ChangeWifi> {
 
   @override
   void initState() {
-    context = this.context;
     tempSSID = "New Wifi";
+    contextStack.add(this.context);
     passwordController = TextEditingController();
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
@@ -28,6 +28,7 @@ class _ChangeWifiState extends State<ChangeWifi> {
   @override
   void dispose() {
     _timer.cancel();
+    contextStack.remove(this.context);
     super.dispose();
   }
 

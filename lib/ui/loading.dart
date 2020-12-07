@@ -13,9 +13,15 @@ class Loading extends StatefulWidget {
 class _LoadingState extends State<Loading> {
   @override
   void initState() {
-    context = this.context;
-    load();
     super.initState();
+    contextStack.add(this.context);
+    load();
+  }
+
+  @override
+  void dispose() {
+    contextStack.remove(this.context);
+    super.dispose();
   }
 
   @override
@@ -33,6 +39,7 @@ class _LoadingState extends State<Loading> {
 
   load() async {
     prefs = await SharedPreferences.getInstance();
+    deviceId = prefs.getInt("deviceID") ?? 0;
     var numOfDevices = prefs.getInt("num_devices") ?? 0;
     if (numOfDevices > 0) {
       deviceList.add(Device.fromMemory(prefs: prefs));

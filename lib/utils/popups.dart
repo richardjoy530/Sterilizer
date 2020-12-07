@@ -1,7 +1,7 @@
 import 'package:Sterilizer/model/data.dart';
 import 'package:flutter/material.dart';
 
-motionDetectedPopUp() async {
+motionDetectedPopUp(Device device) async {
   await showDialog(
     barrierDismissible: false,
     context: context,
@@ -42,6 +42,7 @@ motionDetectedPopUp() async {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
+                    device.motionReset();
                     Navigator.pop(context);
                   }),
             ),
