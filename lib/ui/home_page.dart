@@ -19,11 +19,13 @@ class _HomePageState extends State<HomePage> {
 
   int tap = 0;
 
+  TextEditingController idController;
   @override
   void initState() {
-    context = this.context;
+    contextStack.add(this.context);
     pageController = PageController(initialPage: 0);
     passwordController = TextEditingController();
+    idController = TextEditingController();
     pageController.addListener(() {
       setState(() {
         _selectedIndex = pageController.page.round();
@@ -36,7 +38,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     passwordController.dispose();
+    idController.dispose();
     serverSocket?.close();
+    contextStack.remove(this.context);
     super.dispose();
   }
 
@@ -135,7 +139,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
               child: TextField(
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
@@ -159,6 +163,32 @@ class _HomePageState extends State<HomePage> {
                 ),
                 controller: passwordController,
               ),
+            ),Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
+              child: TextField(
+                keyboardType: TextInputType.number,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  labelText: "Device ID",
+                  focusColor: Colors.black,
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                ),
+                controller: idController,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -175,6 +205,8 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       prefs.setString('homePass', passwordController.text);
                       prefs.setString("homeSSID", homeSSID);
+                      prefs.setInt("deviceID", int.parse(idController.text));
+                      deviceId = int.parse(idController.text);
                       homePass = passwordController.text;
                       Navigator.pop(context);
                     }),

@@ -1,18 +1,20 @@
 import 'dart:io';
-import 'dart:math';
 
+import 'package:Sterilizer/ui/device_page.dart';
 import 'package:Sterilizer/utils/firebase_manager.dart';
 import 'package:Sterilizer/utils/popups.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-BuildContext context;
+BuildContext get context => contextStack.last;
+List<BuildContext> contextStack=[];
 String homeSSID;
 String homePass;
 SharedPreferences prefs;
 ServerSocket serverSocket;
 const String DEVICE_SSID = 'razecov';
+int deviceId = 0;
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
 String homeName = 'My Home';
@@ -28,7 +30,7 @@ class Device {
   Null Function() state;
 
   Device({this.name, this.uv}) {
-    id = Random().nextInt(5000);
+    id = deviceId;
     firebaseManager = FirebaseManager();
     firebaseManager.add(id);
     saveToMemory();
@@ -67,13 +69,19 @@ class Device {
     firebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
       print({[event.snapshot.key,event.snapshot.value]});
       firebaseManager.db.child(id.toString()).child("appConnected").set(1);
-      if(event.snapshot.key=="motionDetected"&&event.snapshot.value==1) {
+      if(event.snapshot.key=="motionDetected"&&event.snapshot.value==2) {
         motionDetected = true;
-        motionDetectedPopUp();
+        motionDetectedPopUp(this);
         switchUV(false);
-        state.call();
+        print([context.widget,context.runtimeType,context.findRenderObject()]);
+        if(context.widget.runtimeType==DevicePage)state.call();
+        uv=false;
       }
     });
+  }
+
+  motionReset(){
+    firebaseManager.db.child(id.toString()).child("motionDetected").set(1);
   }
 
   switchUV(bool uv) async {

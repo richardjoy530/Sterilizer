@@ -11,7 +11,7 @@ class FirebaseManager {
   }
 
   add(int id) {
-    db.child(id.toString()).child("motionDetected").set(0);
+    db.child(id.toString()).child("motionDetected").set(1);
     db.child(id.toString()).child("uv").set("OFF");
     db.child(id.toString()).child("appConnected").set(1);
   }
