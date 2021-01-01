@@ -19,10 +19,18 @@ class _ScheduleTileState extends State<ScheduleTile> {
   @override
   void initState() {
     super.initState();
-    endTime = scheduleData.endTime.hourOfPeriod.toString() + ":";
-    endTime += scheduleData.endTime.minute.toString();
-    startTime = scheduleData.startTime.hourOfPeriod.toString() + ":";
-    startTime += scheduleData.startTime.minute.toString();
+    endTime = scheduleData.endTime.hourOfPeriod == 0
+        ? "12:"
+        : scheduleData.endTime.hourOfPeriod.toString() + ":";
+    endTime += scheduleData.endTime.minute < 10
+        ? "0" + scheduleData.endTime.minute.toString()
+        : scheduleData.endTime.minute;
+    startTime = scheduleData.startTime.hourOfPeriod == 0
+        ? "12:"
+        : scheduleData.startTime.hourOfPeriod.toString() + ":";
+    startTime += scheduleData.startTime.minute < 10
+        ? "0" + scheduleData.startTime.minute.toString()
+        : scheduleData.startTime.minute;
   }
 
   _ScheduleTileState(this.scheduleData);
@@ -99,8 +107,17 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                 setState(() {
                                   scheduleData.startTime = value;
                                   startTime =
-                                      value.hourOfPeriod.toString() + ":";
-                                  startTime += value.minute.toString();
+                                      scheduleData.startTime.hourOfPeriod == 0
+                                          ? "12:"
+                                          : scheduleData.startTime.hourOfPeriod
+                                                  .toString() +
+                                              ":";
+                                  startTime +=
+                                      scheduleData.startTime.minute < 10
+                                          ? "0" +
+                                              scheduleData.startTime.minute
+                                                  .toString()
+                                          : scheduleData.startTime.minute;
                                   deviceList[0].updateSchedules();
                                 });
                             });
@@ -113,7 +130,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                              scheduleData.startTime.hour > 12 ? 'pm' : 'am'),
+                              scheduleData.startTime.hour >= 12 ? 'pm' : 'am'),
                         ),
                       ],
                     ),
@@ -139,8 +156,16 @@ class _ScheduleTileState extends State<ScheduleTile> {
                               if (value != null)
                                 setState(() {
                                   scheduleData.endTime = value;
-                                  endTime = value.hourOfPeriod.toString() + ":";
-                                  endTime += value.minute.toString();
+                                  endTime =
+                                      scheduleData.endTime.hourOfPeriod == 0
+                                          ? "12:"
+                                          : scheduleData.endTime.hourOfPeriod
+                                                  .toString() +
+                                              ":";
+                                  endTime += scheduleData.endTime.minute < 10
+                                      ? "0" +
+                                          scheduleData.endTime.minute.toString()
+                                      : scheduleData.endTime.minute;
                                   deviceList[0].updateSchedules();
                                 });
                             });
@@ -153,7 +178,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                              scheduleData.endTime.hour > 12 ? 'pm' : 'am'),
+                              scheduleData.endTime.hour >= 12 ? 'pm' : 'am'),
                         ),
                       ],
                     ),
