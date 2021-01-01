@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:Sterilizer/ui/change_wifi.dart';
 import 'package:Sterilizer/ui/device_page.dart';
+import 'package:Sterilizer/ui/schedule_page.dart';
+import 'package:Sterilizer/ui/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:wifi/wifi.dart';
 
@@ -15,11 +16,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController passwordController;
   PageController pageController;
+  String floatingButtonText = "Add Device";
   int _selectedIndex = 0;
+  bool isOnSettings = false;
 
   int tap = 0;
 
   TextEditingController idController;
+
   @override
   void initState() {
     contextStack.add(this.context);
@@ -29,6 +33,13 @@ class _HomePageState extends State<HomePage> {
     pageController.addListener(() {
       setState(() {
         _selectedIndex = pageController.page.round();
+        isOnSettings = false;
+        if (_selectedIndex == 1)
+          floatingButtonText = "New Schedule";
+        else if (_selectedIndex == 0)
+          floatingButtonText = "Add Device";
+        else
+          isOnSettings = true;
       });
     });
     load();
@@ -51,16 +62,22 @@ class _HomePageState extends State<HomePage> {
         controller: pageController,
         children: [General(), Schedule(), Settings()],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          onMenuPressed(context);
-        },
-        label: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(Icons.add),
-            Text("Add Device"),
-          ],
+      floatingActionButton: Visibility(
+        visible: !isOnSettings,
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            if (_selectedIndex == 0)
+              onMenuPressed(context);
+            else
+              addNewSchedule();
+          },
+          label: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(Icons.add),
+              Text(floatingButtonText),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -139,7 +156,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: TextField(
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
@@ -163,8 +180,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 controller: passwordController,
               ),
-            ),Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: TextField(
                 keyboardType: TextInputType.number,
                 cursorColor: Colors.black,
@@ -408,6 +426,17 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
+  addNewSchedule() {
+    if (deviceList.isNotEmpty)
+      setState(() {
+        deviceList[0].schedules.add(ScheduleData(
+            TimeOfDay(hour: 6, minute: 15),
+            TimeOfDay(hour: 7, minute: 15),
+            false,
+            [false, false, false, false, false, false, false]));
+      });
+  }
 }
 
 class General extends StatefulWidget {
@@ -435,7 +464,7 @@ class _GeneralState extends State<General> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black12,
+                  color: Colors.grey[100],
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.0),
                       topRight: Radius.circular(30.0)),
@@ -445,7 +474,7 @@ class _GeneralState extends State<General> {
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(30.0)),
                         ),
                         margin: EdgeInsets.all(10),
@@ -470,93 +499,5 @@ class _GeneralState extends State<General> {
         )
       ],
     );
-  }
-}
-
-class Schedule extends StatefulWidget {
-  @override
-  _ScheduleState createState() => _ScheduleState();
-}
-
-class _ScheduleState extends State<Schedule> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 30, bottom: 30),
-          child: ListTile(
-            title: Text(
-              "Schedule",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class Settings extends StatefulWidget {
-  @override
-  _SettingsState createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 30, bottom: 30),
-          child: ListTile(
-            title: Text(
-              "Settings",
-              textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.all(Radius.circular(30.0)),
-          ),
-          margin: EdgeInsets.all(10),
-          child: ListTile(
-            leading: Icon(
-              Icons.home_rounded,
-              color: Colors.black,
-            ),
-            title: Text('Home name'),
-            subtitle: Text("Edit your home name"),
-            onTap: () {},
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.all(Radius.circular(30.0)),
-          ),
-          margin: EdgeInsets.all(10),
-          child: ListTile(
-            leading: Icon(
-              Icons.wifi_tethering_rounded,
-              color: Colors.black,
-            ),
-            title: Text('Connect device to Wifi'),
-            onTap: () {
-              resetHomeWifi();
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  resetHomeWifi() async {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ChangeWifi()));
   }
 }

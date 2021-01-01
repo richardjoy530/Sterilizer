@@ -4,11 +4,12 @@ import 'package:Sterilizer/ui/device_page.dart';
 import 'package:Sterilizer/utils/firebase_manager.dart';
 import 'package:Sterilizer/utils/popups.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 BuildContext get context => contextStack.last;
-List<BuildContext> contextStack=[];
+List<BuildContext> contextStack = [];
 String homeSSID;
 String homePass;
 SharedPreferences prefs;
@@ -25,66 +26,113 @@ class Device {
   int id;
   bool uv;
   bool motionDetected = false;
-  bool appConnected=true;
+  bool appConnected = true;
+  List<ScheduleData> schedules = [];
   FirebaseManager firebaseManager;
-  Null Function() state;
+  Null Function() _state;
 
   Device({this.name, this.uv}) {
     id = deviceId;
     firebaseManager = FirebaseManager();
-    firebaseManager.add(id);
+    firebaseManager.add(this);
     saveToMemory();
     listenChanges();
   }
 
-  setTheState(Null Function() param0){
-    state = param0;
+  setTheState(Null Function() param0) {
+    _state = param0;
   }
 
-
   Device.fromMemory({SharedPreferences prefs}) {
-    name = prefs.getString("device_name");
+    name = prefs.getString("device_name") ?? 'Device';
     id = prefs.getInt("device_id");
-    uv = prefs.getBool("device_uv");
+    uv = prefs.getBool("device_uv") ?? false;
+    (prefs.getStringList("schedules") ?? []).forEach((element) {
+      schedules.add(ScheduleData.fromString(element));
+    });
     firebaseManager = FirebaseManager();
     firebaseManager.db.child(id.toString()).child("appConnected").set(1);
-    update();
+    sync();
     listenChanges();
   }
 
   saveToMemory() {
+    List<String> temp = [];
+    schedules.forEach((element) {
+      temp.add(element.stringify());
+    });
     prefs.setInt("num_devices", 1);
     prefs.setString("device_name", name);
     prefs.setInt("device_id", id);
     prefs.setBool("device_uv", uv);
+    prefs.setStringList("schedules", temp);
   }
 
-  update() async {
-    print(uv);
+  sync() async {
     await firebaseManager.sync(this);
-    print([uv, "After syncing"]);
+  }
+
+  updateSchedules() async {
+    saveToMemory();
+    await firebaseManager.updateSchedules(this);
   }
 
   listenChanges() {
     firebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
-      print({[event.snapshot.key,event.snapshot.value]});
       firebaseManager.db.child(id.toString()).child("appConnected").set(1);
-      if(event.snapshot.key=="motionDetected"&&event.snapshot.value==2) {
+      if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
         motionDetected = true;
         motionDetectedPopUp(this);
-        switchUV(false);
-        print([context.widget,context.runtimeType,context.findRenderObject()]);
-        if(context.widget.runtimeType==DevicePage)state.call();
-        uv=false;
+        uv = false;
+        switchUV();
+        if (context.widget.runtimeType == DevicePage) _state.call();
       }
     });
   }
 
-  motionReset(){
-    firebaseManager.db.child(id.toString()).child("motionDetected").set(1);
+  motionReset() {
+    firebaseManager.motionReset(this);
   }
 
-  switchUV(bool uv) async {
-    await firebaseManager.switchUV(id,uv);
+  switchUV() async {
+    await firebaseManager.switchUV(this);
+  }
+}
+
+class ScheduleData {
+  TimeOfDay startTime;
+  TimeOfDay endTime;
+  bool state;
+  List<bool> days = [true, true, true, true, true, true, true];
+
+  ScheduleData(this.startTime, this.endTime, this.state, this.days);
+
+  ScheduleData.fromString(String dataInString) {
+    var temp = dataInString.split(' ');
+    startTime = TimeOfDay(hour: int.parse(temp[0]), minute: int.parse(temp[1]));
+    endTime = TimeOfDay(hour: int.parse(temp[2]), minute: int.parse(temp[3]));
+    state = temp[4] == "false" ? false : true;
+    days[0] = temp[5] == "false" ? false : true;
+    days[1] = temp[6] == "false" ? false : true;
+    days[2] = temp[7] == "false" ? false : true;
+    days[3] = temp[8] == "false" ? false : true;
+    days[4] = temp[9] == "false" ? false : true;
+    days[5] = temp[10] == "false" ? false : true;
+    days[6] = temp[11] == "false" ? false : true;
+  }
+
+  String stringify() {
+    String temp = startTime.hour.toString() +
+        " " +
+        startTime.minute.toString() +
+        " " +
+        endTime.hour.toString() +
+        " " +
+        endTime.minute.toString() +
+        " " +
+        state.toString() +
+        " " +
+        days.toString();
+    return temp.replaceAll("[", '').replaceAll("]", '').replaceAll(",", '');
   }
 }
