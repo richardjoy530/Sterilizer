@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:flare_flutter/flare_actor.dart';
-
 import 'package:Sterilizer/model/data.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -79,7 +78,7 @@ class _DevicePageState extends State<DevicePage> {
               onTap: () {
                 setState(() {
                   device.uv = !device.uv;
-                  device.switchUV(device.uv);
+                  device.switchUV();
                   toggle = device.uv == true ? "on" : "off";
                 });
               },
