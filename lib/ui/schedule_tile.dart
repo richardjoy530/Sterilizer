@@ -24,13 +24,13 @@ class _ScheduleTileState extends State<ScheduleTile> {
         : scheduleData.endTime.hourOfPeriod.toString() + ":";
     endTime += scheduleData.endTime.minute < 10
         ? "0" + scheduleData.endTime.minute.toString()
-        : scheduleData.endTime.minute;
+        : scheduleData.endTime.minute.toString();
     startTime = scheduleData.startTime.hourOfPeriod == 0
         ? "12:"
         : scheduleData.startTime.hourOfPeriod.toString() + ":";
     startTime += scheduleData.startTime.minute < 10
         ? "0" + scheduleData.startTime.minute.toString()
-        : scheduleData.startTime.minute;
+        : scheduleData.startTime.minute.toString();
   }
 
   _ScheduleTileState(this.scheduleData);
@@ -117,7 +117,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                           ? "0" +
                                               scheduleData.startTime.minute
                                                   .toString()
-                                          : scheduleData.startTime.minute;
+                                          : scheduleData.startTime.minute
+                                              .toString();
                                   deviceList[0].updateSchedules();
                                 });
                             });
@@ -165,7 +166,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                   endTime += scheduleData.endTime.minute < 10
                                       ? "0" +
                                           scheduleData.endTime.minute.toString()
-                                      : scheduleData.endTime.minute;
+                                      : scheduleData.endTime.minute.toString();
                                   deviceList[0].updateSchedules();
                                 });
                             });
