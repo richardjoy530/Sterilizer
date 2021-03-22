@@ -1,5 +1,6 @@
 import 'package:Sterilizer/model/data.dart';
 import 'package:Sterilizer/ui/schedule_tile.dart';
+import 'package:Sterilizer/utils/popups.dart';
 import 'package:flutter/material.dart';
 
 class Schedule extends StatefulWidget {
@@ -25,7 +26,12 @@ class _ScheduleState extends State<Schedule> {
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {
-              return ScheduleTile(deviceList[0].schedules[index]);
+              return GestureDetector(
+                  onLongPress: () {
+                    deleteSchedule(index);
+                  },
+                  child: ScheduleTile(deviceList[0].schedules[index],
+                      key: UniqueKey()));
             },
             itemCount:
                 deviceList.isNotEmpty ? deviceList[0].schedules.length : 0,
@@ -33,5 +39,16 @@ class _ScheduleState extends State<Schedule> {
         )
       ],
     );
+  }
+
+  void deleteSchedule(int index) {
+    deleteSchedulePopup().then((value) {
+      if (value) {
+        setState(() {
+          deviceList[0].schedules.removeAt(index);
+          deviceList[0].updateSchedules();
+        });
+      }
+    });
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class ScheduleTile extends StatefulWidget {
   final ScheduleData scheduleData;
 
-  ScheduleTile(this.scheduleData);
+  ScheduleTile(this.scheduleData,{Key key}):super(key: key);
 
   @override
   _ScheduleTileState createState() => _ScheduleTileState(scheduleData);
@@ -65,8 +65,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     ),
                   ],
                 ),
-                Listener(
-                  onPointerUp: (event) {
+                GestureDetector(
+                  onTap: () {
                     setState(() {
                       scheduleData.state = !scheduleData.state;
                       deviceList[0].updateSchedules();
@@ -95,9 +95,10 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        Listener(
-                          onPointerUp: (event) {
+                        GestureDetector(
+                          onTap: () {
                             Future<TimeOfDay> selectedTime = showTimePicker(
                               initialTime: TimeOfDay.now(),
                               context: context,
@@ -146,9 +147,10 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        Listener(
-                          onPointerUp: (event) {
+                        GestureDetector(
+                          onTap: () {
                             Future<TimeOfDay> selectedTime = showTimePicker(
                               initialTime: TimeOfDay.now(),
                               context: context,
@@ -187,66 +189,66 @@ class _ScheduleTileState extends State<ScheduleTile> {
                 ),
               ],
             ),
-            Listener(
-              onPointerUp: (event) {
-                Future.delayed(Duration(milliseconds: 500), () {
-                  deviceList[0].updateSchedules();
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[0] = !scheduleData.days[0];
-                        });
-                      },
-                      child: WeekSelector("S", scheduleData.days[0])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[1] = !scheduleData.days[1];
-                        });
-                      },
-                      child: WeekSelector("M", scheduleData.days[1])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[2] = !scheduleData.days[2];
-                        });
-                      },
-                      child: WeekSelector("T", scheduleData.days[2])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[3] = !scheduleData.days[3];
-                        });
-                      },
-                      child: WeekSelector("W", scheduleData.days[3])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[4] = !scheduleData.days[4];
-                        });
-                      },
-                      child: WeekSelector("T", scheduleData.days[4])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[5] = !scheduleData.days[5];
-                        });
-                      },
-                      child: WeekSelector("F", scheduleData.days[5])),
-                  Listener(
-                      onPointerUp: (event) {
-                        setState(() {
-                          scheduleData.days[6] = !scheduleData.days[6];
-                        });
-                      },
-                      child: WeekSelector("S", scheduleData.days[6])),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[0] = !scheduleData.days[0];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("S", scheduleData.days[0])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[1] = !scheduleData.days[1];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("M", scheduleData.days[1])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[2] = !scheduleData.days[2];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("T", scheduleData.days[2])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[3] = !scheduleData.days[3];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("W", scheduleData.days[3])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[4] = !scheduleData.days[4];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("T", scheduleData.days[4])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[5] = !scheduleData.days[5];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("F", scheduleData.days[5])),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        scheduleData.days[6] = !scheduleData.days[6];
+                        deviceList[0].updateSchedules();
+                      });
+                    },
+                    child: WeekSelector("S", scheduleData.days[6])),
+              ],
             )
           ],
         ),
