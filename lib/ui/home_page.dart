@@ -4,6 +4,7 @@ import 'package:Sterilizer/ui/device_page.dart';
 import 'package:Sterilizer/ui/schedule_page.dart';
 import 'package:Sterilizer/ui/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wifi/wifi.dart';
 
 import '../model/data.dart';
@@ -428,7 +429,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   addNewSchedule() {
-    if (deviceList.isNotEmpty)
+    if (deviceList.isNotEmpty) if (deviceList[0].schedules.length < 5)
       setState(() {
         deviceList[0].schedules.add(ScheduleData(
             TimeOfDay(hour: 6, minute: 15),
@@ -436,6 +437,10 @@ class _HomePageState extends State<HomePage> {
             false,
             [false, false, false, false, false, false, false]));
       });
+    else
+      Fluttertoast.showToast(
+        msg: "Cannot add more than 5 schedules",
+      );
   }
 }
 

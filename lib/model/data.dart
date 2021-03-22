@@ -51,7 +51,6 @@ class Device {
       schedules.add(ScheduleData.fromString(element));
     });
     firebaseManager = FirebaseManager();
-    firebaseManager.db.child(id.toString()).child("appConnected").set(1);
     sync();
     listenChanges();
   }
@@ -79,7 +78,6 @@ class Device {
 
   listenChanges() {
     firebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
-      firebaseManager.db.child(id.toString()).child("appConnected").set(1);
       if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
         motionDetected = true;
         motionDetectedPopUp(this);

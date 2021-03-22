@@ -13,7 +13,6 @@ class FirebaseManager {
   add(Device device) {
     db.child(device.id.toString()).child("motionDetected").set(1);
     db.child(device.id.toString()).child("uv").set("OFF");
-    db.child(device.id.toString()).child("appConnected").set(1);
   }
 
   switchUV(Device device) async {
@@ -38,24 +37,35 @@ class FirebaseManager {
       var start =
           element.startTime.hour * 60 * 60 + element.startTime.minute * 60;
       var end = element.endTime.hour * 60 * 60 + element.endTime.hour * 60;
-      var temp = element.stringify().split(" ");
-      mapList.add({
-        "state": element.state ? 1 : 0,
-        "endStamp": end,
-        "startStamp": start,
-        "Sunday": temp[4 + 1],
-        "Monday": temp[4 + 2],
-        "Tuesday": temp[4 + 3],
-        "Wednesday": temp[4 + 4],
-        "Thursday": temp[4 + 5],
-        "Friday": temp[4 + 6],
-        "Saturday": temp[4 + 7],
-      });
+      if (element.state)
+        mapList.add({
+          "endStamp": end,
+          "startStamp": start,
+          "dayStamp": encodeScheduleDays(element),
+        });
     });
     db.child(device.id.toString()).child("schedules").set(mapList);
+    db
+        .child(device.id.toString())
+        .child("schedules")
+        .child('active')
+        .set(mapList.length);
   }
 
   void motionReset(Device device) {
     db.child(device.id.toString()).child("motionDetected").set(1);
+  }
+
+  String encodeScheduleDays(ScheduleData scheduleData) {
+    String encodedValue = "0000000";
+    var dayBool = scheduleData.stringify().split(" ");
+    if (dayBool[4 + 1] == "true") encodedValue = encodedValue.replaceRange(0, 1, '1');
+    if (dayBool[4 + 2] == "true") encodedValue = encodedValue.replaceRange(1, 2, '1');
+    if (dayBool[4 + 3] == "true") encodedValue = encodedValue.replaceRange(2, 3, '1');
+    if (dayBool[4 + 4] == "true") encodedValue = encodedValue.replaceRange(3, 4, '1');
+    if (dayBool[4 + 5] == "true") encodedValue = encodedValue.replaceRange(4, 5, '1');
+    if (dayBool[4 + 6] == "true") encodedValue = encodedValue.replaceRange(5, 6, '1');
+    if (dayBool[4 + 7] == "true") encodedValue = encodedValue.replaceRange(6, 7, '1');
+    return encodedValue;
   }
 }
