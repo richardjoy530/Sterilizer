@@ -28,12 +28,14 @@ class MainActivity : FlutterActivity() {
     private val permissions: Array<String> = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION
     )
+//    private var permissionsResult: MethodChannel.Result
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
             when (call.method) {
                 "permission" -> {
+//                    permissionsResult = result;
                     permissionHandler(result, call)
                 }
                 "register" -> {
@@ -113,6 +115,15 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
+//
+//    override fun onRequestPermissionsResult(
+//            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (grantResults[0] == PackageManager.PERMISSION_DENIED)
+//            permissionsResult.success(false)
+//        else permissionsResult.success(true)
+//    }
 
     private fun createWifiConfig(ssid: String, pass: String): WifiConfiguration? {
         val config = WifiConfiguration()
