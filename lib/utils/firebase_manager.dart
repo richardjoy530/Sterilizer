@@ -36,7 +36,7 @@ class FirebaseManager {
     device.schedules.forEach((element) {
       var start =
           element.startTime.hour * 60 * 60 + element.startTime.minute * 60;
-      var end = element.endTime.hour * 60 * 60 + element.endTime.hour * 60;
+      var end = element.endTime.hour * 60 * 60 + element.endTime.minute * 60;
       if (element.state)
         mapList.add({
           "endStamp": end,
