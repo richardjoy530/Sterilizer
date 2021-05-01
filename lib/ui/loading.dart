@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wifi/wifi.dart';
 
@@ -42,7 +41,6 @@ class _LoadingState extends State<Loading> {
     // Fluttertoast.showToast(msg: "Loading");
     // await Future.delayed(Duration(seconds: 4));
     prefs = await SharedPreferences.getInstance();
-    deviceId = prefs.getInt("deviceID") ?? 0;
     var numOfDevices = prefs.getInt("num_devices") ?? 0;
     if (numOfDevices > 0) {
       deviceList.add(Device.fromMemory(prefs: prefs));
@@ -50,17 +48,19 @@ class _LoadingState extends State<Loading> {
     // Fluttertoast.showToast(msg: "Before asking permission");
     // await Future.delayed(Duration(seconds: 3));
     final bool result = await platform.invokeMethod('permission');
-    String ssid = await platform.invokeMethod('ssid');
-    Fluttertoast.showToast(msg: "Method channel ssid: $ssid");
-    await Future.delayed(Duration(seconds: 5));
+    // String ssid = await platform.invokeMethod('ssid');
+    // Fluttertoast.showToast(msg: "Method channel ssid: $ssid");
+    // await Future.delayed(Duration(seconds: 5));
     if (result == true) {
       String pass = prefs.getString('homePass');
       if (pass == null) {
         homeSSID = await Wifi.ssid;
-        Fluttertoast.showToast(msg: homeSSID);
-        while (homeSSID == "<unknown ssid>") {
+        // Fluttertoast.showToast(msg: homeSSID);
+        int i = 0;
+        while (homeSSID == "<unknown ssid>" && i <= 5) {
+          await Future.delayed(Duration(seconds: 2));
           homeSSID = await Wifi.ssid;
-          Fluttertoast.showToast(msg: homeSSID);
+          i++;
         }
         prefs.setString('homeSSID', homeSSID);
       } else {
