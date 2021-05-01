@@ -18,7 +18,7 @@ const String DEVICE_SSID = 'razecov';
 int deviceId = 0;
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
-String homeName = 'My Home';
+String homeName = 'Dashboard';
 List<Device> deviceList = [];
 
 class Device {
@@ -46,7 +46,7 @@ class Device {
   Device.fromMemory({SharedPreferences prefs}) {
     name = prefs.getString("device_name") ?? 'Device';
     id = prefs.getInt("device_id");
-    uv = prefs.getBool("device_uv") ?? false;
+    uv = false;
     (prefs.getStringList("schedules") ?? []).forEach((element) {
       schedules.add(ScheduleData.fromString(element));
     });

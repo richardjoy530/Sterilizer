@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:Sterilizer/ui/device_page.dart';
-import 'package:Sterilizer/ui/schedule_page.dart';
-import 'package:Sterilizer/ui/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wifi/wifi.dart';
@@ -16,33 +14,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController passwordController;
-  PageController pageController;
   String floatingButtonText = "Add Device";
-  int _selectedIndex = 0;
-  bool isOnSettings = false;
-
-  int tap = 0;
 
   TextEditingController idController;
 
   @override
   void initState() {
     contextStack.add(this.context);
-    pageController = PageController(initialPage: 0);
     passwordController = TextEditingController();
     idController = TextEditingController();
-    pageController.addListener(() {
-      setState(() {
-        _selectedIndex = pageController.page.round();
-        isOnSettings = false;
-        if (_selectedIndex == 1)
-          floatingButtonText = "New Schedule";
-        else if (_selectedIndex == 0)
-          floatingButtonText = "Add Device";
-        else
-          isOnSettings = true;
-      });
-    });
     load();
     super.initState();
   }
@@ -59,18 +39,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: pageController,
-        children: [General(), Schedule(), Settings()],
-      ),
+      body: General(),
       floatingActionButton: Visibility(
-        visible: !isOnSettings,
         child: FloatingActionButton.extended(
           onPressed: () {
-            if (_selectedIndex == 0)
-              onMenuPressed(context);
-            else
-              addNewSchedule();
+            onMenuPressed(context);
           },
           label: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,25 +54,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule_rounded),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-      ),
     );
   }
 
@@ -109,14 +63,6 @@ class _HomePageState extends State<HomePage> {
     prefs.remove('homeIP');
     homeSSID = await Wifi.ssid;
     load();
-  }
-
-  _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
-    });
   }
 
   load() async {
