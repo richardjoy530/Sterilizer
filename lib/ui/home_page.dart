@@ -14,8 +14,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController passwordController;
-  String floatingButtonText = "Add Device";
-
   TextEditingController idController;
 
   @override
@@ -43,13 +41,13 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: Visibility(
         child: FloatingActionButton.extended(
           onPressed: () {
-            onMenuPressed(context);
+            onAddDevicePressed(context);
           },
           label: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(Icons.add),
-              Text(floatingButtonText),
+              Text("Add Device"),
             ],
           ),
         ),
@@ -219,7 +217,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  onMenuPressed(BuildContext context) {
+  onAddDevicePressed(BuildContext context) {
+    //addDevice();
     showModalBottomSheet(
         backgroundColor: Colors.white,
         isScrollControlled: true,
@@ -239,36 +238,33 @@ class _HomePageState extends State<HomePage> {
                 endIndent: 2 * MediaQuery.of(context).size.width / 4,
               ),
               Container(
-                child: Text(
-                  "Searching for devices",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                      child: SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                              backgroundColor: Colors.black12, strokeWidth: 2)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Searching for devices",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                ),
-                margin: EdgeInsets.all(10),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.wifi_tethering_rounded,
-                    color: Colors.black,
-                  ),
-                  title: Text('Ibis Sterilizer'),
-                  subtitle: Text("Tap to connect"),
-                  onTap: () {
-                    addDevice();
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Center(
-                  child: CircularProgressIndicator(
-                      backgroundColor: Colors.black12),
-                ),
-              ),
+              Divider(
+                thickness: 2,
+                color: Colors.black,
+                indent: 2 * MediaQuery.of(context).size.width / 4,
+                endIndent: 2 * MediaQuery.of(context).size.width / 4,
+              )
             ],
           );
         });
@@ -285,8 +281,8 @@ class _HomePageState extends State<HomePage> {
       'ssid': DEVICE_SSID,
       'password': DEVICE_PASSWORD,
     };
-    var result = await platform.invokeMethod("register", cred);
-    print(result.runtimeType);
+    //var result = await platform.invokeMethod("register", cred);
+    //print(result.runtimeType);
     String ssid = await Wifi.ssid;
     while (ssid != DEVICE_SSID) {
       ssid = await Wifi.ssid;
