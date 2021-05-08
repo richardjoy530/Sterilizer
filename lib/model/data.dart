@@ -15,11 +15,47 @@ String homePass;
 SharedPreferences prefs;
 ServerSocket serverSocket;
 const String DEVICE_SSID = 'razecov';
-int deviceId = 0;
+int deviceId = -1;
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
 String homeName = 'Dashboard';
 List<Device> deviceList = [];
+
+class RegistrationProcess {
+  static const String PREPARING = "Preparing network details";
+
+  static const String SEARCHING = "Searching for devices";
+
+  static const String ESTABLISHING = "Establishing connection with the device";
+
+  static const String REGISTERING = "Registering device";
+
+  static const String WAITING = "Waiting for device to be online";
+
+  static const String FINISHING = "Finishing setup";
+
+  static const String OVER = "OVER";
+
+  static String currentStatusString = SEARCHING;
+
+  static int currentStatus = 0;
+
+  static changeStatus(String status) {
+    if (status == PREPARING)
+      currentStatus = 0;
+    else if (status == SEARCHING)
+      currentStatus = 1;
+    else if (status == ESTABLISHING)
+      currentStatus = 2;
+    else if (status == REGISTERING)
+      currentStatus = 3;
+    else if (status == WAITING)
+      currentStatus = 4;
+    else if (status == FINISHING)
+      currentStatus = 5;
+    else if (status == OVER) currentStatus = 6;
+  }
+}
 
 class Device {
   String name;
@@ -28,13 +64,11 @@ class Device {
   bool motionDetected = false;
   bool appConnected = true;
   List<ScheduleData> schedules = [];
-  FirebaseManager firebaseManager;
   Null Function() _state;
 
   Device({this.name, this.uv}) {
     id = deviceId;
-    firebaseManager = FirebaseManager();
-    firebaseManager.add(this);
+    FirebaseManager.add(this);
     saveToMemory();
     listenChanges();
   }
@@ -50,7 +84,6 @@ class Device {
     (prefs.getStringList("schedules") ?? []).forEach((element) {
       schedules.add(ScheduleData.fromString(element));
     });
-    firebaseManager = FirebaseManager();
     sync();
     listenChanges();
   }
@@ -68,16 +101,16 @@ class Device {
   }
 
   sync() async {
-    await firebaseManager.sync(this);
+    await FirebaseManager.sync(this);
   }
 
   updateSchedules() async {
     saveToMemory();
-    await firebaseManager.updateSchedules(this);
+    await FirebaseManager.updateSchedules(this);
   }
 
   listenChanges() {
-    firebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
+    FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
       if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
         motionDetected = true;
         motionDetectedPopUp(this);
@@ -89,11 +122,11 @@ class Device {
   }
 
   motionReset() {
-    firebaseManager.motionReset(this);
+    FirebaseManager.motionReset(this);
   }
 
   switchUV() async {
-    await firebaseManager.switchUV(this);
+    await FirebaseManager.switchUV(this);
   }
 }
 

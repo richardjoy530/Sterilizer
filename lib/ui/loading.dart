@@ -53,20 +53,20 @@ class _LoadingState extends State<Loading> {
     // await Future.delayed(Duration(seconds: 5));
     if (result == true) {
       String pass = prefs.getString('homePass');
-      if (pass == null) {
-        homeSSID = await Wifi.ssid;
-        // Fluttertoast.showToast(msg: homeSSID);
-        int i = 0;
-        while (homeSSID == "<unknown ssid>" && i <= 5) {
-          await Future.delayed(Duration(seconds: 2));
-          homeSSID = await Wifi.ssid;
-          i++;
-        }
-        prefs.setString('homeSSID', homeSSID);
-      } else {
-        homeSSID = prefs.getString('homeSSID');
-        homePass = prefs.getString('homePass');
-      }
+      // if (pass == null) {
+      //   homeSSID = await Wifi.ssid;
+      //   // Fluttertoast.showToast(msg: homeSSID);
+      //   int i = 0;
+      //   while (homeSSID == "<unknown ssid>" && i <= 5) {
+      //     await Future.delayed(Duration(seconds: 2));
+      //     homeSSID = await Wifi.ssid;
+      //     i++;
+      //   }
+      //   prefs.setString('homeSSID', homeSSID);
+      // } else {
+      //   homeSSID = prefs.getString('homeSSID');
+      //   homePass = prefs.getString('homePass');
+      // }
       Future.delayed(Duration(seconds: 1)).then((value) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
