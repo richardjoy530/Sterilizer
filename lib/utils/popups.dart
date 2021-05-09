@@ -1,5 +1,6 @@
 import 'package:Sterilizer/model/data.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 motionDetectedPopUp(Device device) async {
   await showDialog(
@@ -111,4 +112,128 @@ Future<bool> deleteSchedulePopup() async {
         );
       });
   return result;
+}
+
+enterPasswordPopUp() async {
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+  await showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        backgroundColor: Color(0xffe8e8e8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Enter your wifi password',
+          textAlign: TextAlign.center,
+        ),
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.wifi_lock_rounded),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(homeSSID),
+              )
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: TextField(
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                labelText: "Password",
+                focusColor: Colors.black,
+                labelStyle: TextStyle(color: Colors.black),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              controller: passwordController,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: TextField(
+              keyboardType: TextInputType.number,
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                labelText: "Device ID",
+                focusColor: Colors.black,
+                labelStyle: TextStyle(color: Colors.black),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              controller: idController,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: Color(0xff060606),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    prefs.setString('homePass', passwordController.text);
+                    prefs.setString("homeSSID", homeSSID);
+                    prefs.setInt("deviceID", int.parse(idController.text));
+                    deviceIdTemp = int.parse(idController.text);
+                    homePass = passwordController.text;
+                    Navigator.pop(context);
+                  }),
+            ),
+          )
+        ],
+      );
+    },
+  );
+}
+
+addNewSchedule() {
+  if (deviceList.isNotEmpty) if (deviceList[0].schedules.length < 5)
+    deviceList[0].schedules.add(ScheduleData(
+        TimeOfDay(hour: 6, minute: 15),
+        TimeOfDay(hour: 7, minute: 15),
+        false,
+        [false, false, false, false, false, false, false]));
+  else
+    Fluttertoast.showToast(
+      msg: "Cannot add more than 5 schedules",
+    );
 }
