@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Sterilizer/model/db_helper.dart';
 import 'package:Sterilizer/ui/device_page.dart';
 import 'package:Sterilizer/utils/firebase_manager.dart';
 import 'package:Sterilizer/utils/popups.dart';
@@ -15,7 +16,8 @@ String homePass;
 SharedPreferences prefs;
 ServerSocket serverSocket;
 const String DEVICE_SSID = 'razecov';
-int deviceId = -1;
+int deviceIdTemp = -1;
+String deviceNameTemp = "";
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
 String homeName = 'Dashboard';
@@ -34,42 +36,54 @@ class RegistrationProcess {
 
   static const String FINISHING = "Finishing setup";
 
-  static const String OVER = "OVER";
+  static const String OVER = "Finished";
 
   static String currentStatusString = SEARCHING;
 
   static int currentStatus = 0;
 
   static changeStatus(String status) {
-    if (status == PREPARING)
+    if (status == PREPARING) {
       currentStatus = 0;
-    else if (status == SEARCHING)
+      currentStatusString = PREPARING;
+    } else if (status == SEARCHING) {
       currentStatus = 1;
-    else if (status == ESTABLISHING)
+      currentStatusString = SEARCHING;
+    } else if (status == ESTABLISHING) {
       currentStatus = 2;
-    else if (status == REGISTERING)
+      currentStatusString = ESTABLISHING;
+    } else if (status == REGISTERING) {
       currentStatus = 3;
-    else if (status == WAITING)
+      currentStatusString = REGISTERING;
+    } else if (status == WAITING) {
       currentStatus = 4;
-    else if (status == FINISHING)
+      currentStatusString = WAITING;
+    } else if (status == FINISHING) {
       currentStatus = 5;
-    else if (status == OVER) currentStatus = 6;
+      currentStatusString = FINISHING;
+    } else if (status == OVER) {
+      currentStatus = 6;
+      currentStatusString = OVER;
+    }
   }
 }
 
 class Device {
   String name;
   int id;
-  bool uv;
-  bool motionDetected = false;
+  bool uv = false;
   bool appConnected = true;
   List<ScheduleData> schedules = [];
   Null Function() _state;
 
-  Device({this.name, this.uv}) {
-    id = deviceId;
+  Device.newDevice({this.name, this.id}) {
     FirebaseManager.add(this);
-    saveToMemory();
+    DataBaseHelper.addDevice(this);
+    listenChanges();
+  }
+
+  Device.fromDB({this.name, this.id, this.schedules}){
+    sync();
     listenChanges();
   }
 
@@ -77,42 +91,20 @@ class Device {
     _state = param0;
   }
 
-  Device.fromMemory({SharedPreferences prefs}) {
-    name = prefs.getString("device_name") ?? 'Device';
-    id = prefs.getInt("device_id");
-    uv = false;
-    (prefs.getStringList("schedules") ?? []).forEach((element) {
-      schedules.add(ScheduleData.fromString(element));
-    });
-    sync();
-    listenChanges();
-  }
-
-  saveToMemory() {
-    List<String> temp = [];
-    schedules.forEach((element) {
-      temp.add(element.stringify());
-    });
-    prefs.setInt("num_devices", 1);
-    prefs.setString("device_name", name);
-    prefs.setInt("device_id", id);
-    prefs.setBool("device_uv", uv);
-    prefs.setStringList("schedules", temp);
-  }
-
   sync() async {
     await FirebaseManager.sync(this);
   }
 
   updateSchedules() async {
-    saveToMemory();
+    schedules.forEach((scheduleData) {
+      DataBaseHelper.updateSchedule(scheduleData);
+    });
     await FirebaseManager.updateSchedules(this);
   }
 
   listenChanges() {
     FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
       if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
-        motionDetected = true;
         motionDetectedPopUp(this);
         uv = false;
         switchUV();
@@ -135,10 +127,13 @@ class ScheduleData {
   TimeOfDay endTime;
   bool state;
   List<bool> days = [true, true, true, true, true, true, true];
+  int scheduleId;
 
-  ScheduleData(this.startTime, this.endTime, this.state, this.days);
+  ScheduleData(this.startTime, this.endTime, this.state, this.days) {
+    scheduleId = DateTime.now().millisecondsSinceEpoch;
+  }
 
-  ScheduleData.fromString(String dataInString) {
+  ScheduleData.fromString(String dataInString, int id) {
     var temp = dataInString.split(' ');
     startTime = TimeOfDay(hour: int.parse(temp[0]), minute: int.parse(temp[1]));
     endTime = TimeOfDay(hour: int.parse(temp[2]), minute: int.parse(temp[3]));
@@ -150,6 +145,7 @@ class ScheduleData {
     days[4] = temp[9] == "false" ? false : true;
     days[5] = temp[10] == "false" ? false : true;
     days[6] = temp[11] == "false" ? false : true;
+    scheduleId = id;
   }
 
   String stringify() {

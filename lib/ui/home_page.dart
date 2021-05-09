@@ -13,23 +13,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController passwordController;
-  TextEditingController idController;
   void Function(void Function()) setBottomSheetState;
 
   @override
   void initState() {
     contextStack.add(this.context);
-    passwordController = TextEditingController();
-    idController = TextEditingController();
-    // load();
     super.initState();
   }
 
   @override
   void dispose() {
-    passwordController.dispose();
-    idController.dispose();
     serverSocket?.close();
     contextStack.remove(this.context);
     super.dispose();
@@ -54,140 +47,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  resetHomeWifi() async {
-    prefs.remove('homePass');
-    prefs.remove('homeSSID');
-    prefs.remove('homeIP');
-    homeSSID = await Wifi.ssid;
-    load();
-  }
-
-  load() async {
-    String pass = prefs.getString('homePass');
-    if (pass == null) {
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        enterPasswordPopUp();
-      });
-    }
-  }
-
-  enterPasswordPopUp() async {
-    await showDialog(
-      barrierDismissible: false,
-      context: this.context,
-      builder: (context) {
-        return SimpleDialog(
-          backgroundColor: Color(0xffe8e8e8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            'Enter your wifi password',
-            textAlign: TextAlign.center,
-          ),
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.wifi_lock_rounded),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(homeSSID),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: TextField(
-                cursorColor: Colors.black,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  focusColor: Colors.black,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                ),
-                controller: passwordController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: TextField(
-                keyboardType: TextInputType.number,
-                cursorColor: Colors.black,
-                decoration: InputDecoration(
-                  labelText: "Device ID",
-                  focusColor: Colors.black,
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                ),
-                controller: idController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: Color(0xff060606),
-                    child: Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      prefs.setString('homePass', passwordController.text);
-                      prefs.setString("homeSSID", homeSSID);
-                      prefs.setInt("deviceID", int.parse(idController.text));
-                      deviceId = int.parse(idController.text);
-                      homePass = passwordController.text;
-                      Navigator.pop(context);
-                    }),
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  wifiConnect(String ssid, String password) async {
-    final Map<String, dynamic> cred = {
-      'ssid': ssid,
-      'password': password,
-    };
-    return await platform.invokeMethod("wifi", cred);
   }
 
   void connectToServer() {
@@ -219,201 +78,50 @@ class _HomePageState extends State<HomePage> {
   }
 
   onAddDevicePressed(BuildContext context) async {
+    RegistrationProcess.currentStatus = 0;
+    RegistrationProcess.currentStatusString = RegistrationProcess.PREPARING;
     await addDevicePopup();
-    if (deviceId != -1)
-      await showModalBottomSheet(
-          backgroundColor: Colors.white,
-          enableDrag: false,
-          isDismissible: false,
-          context: context,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                topRight: Radius.circular(20.0)),
-          ),
-          builder: (contextPopUp) {
-            if (!contextStack.contains(contextPopUp)) {
-              contextStack.add(contextPopUp);
-              startRegistrationProcess();
-            }
-            return StatefulBuilder(builder: (context, setStateOfBottomSheet) {
-              setBottomSheetState = setStateOfBottomSheet;
-              return Wrap(
-                alignment: WrapAlignment.center,
-                children: <Widget>[
-                  Divider(
-                    thickness: 2,
-                    color: Colors.black,
-                    indent: 2 * MediaQuery.of(context).size.width / 4,
-                    endIndent: 2 * MediaQuery.of(context).size.width / 4,
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                          child: SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(
-                                  backgroundColor: Colors.black12,
-                                  strokeWidth: 2)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            RegistrationProcess.currentStatusString,
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w300),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 0
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.PREPARING),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 1
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.SEARCHING),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 2
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.ESTABLISHING),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 3
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.REGISTERING),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 4
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.WAITING),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                RegistrationProcess.currentStatus > 5
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(RegistrationProcess.FINISHING),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(
-                    thickness: 2,
-                    color: Colors.black,
-                    indent: 2 * MediaQuery.of(context).size.width / 4,
-                    endIndent: 2 * MediaQuery.of(context).size.width / 4,
-                  )
-                ],
-              );
-            });
-          });
+    if (deviceIdTemp != -1 && deviceNameTemp != "") await showBottomSheet();
     if (contextStack.last.widget.runtimeType == BottomSheet)
       contextStack.removeLast();
-    deviceId=-1;
+    deviceIdTemp = -1;
   }
 
   startRegistrationProcess() async {
-    print(contextStack.length);
     await Future.delayed(Duration(seconds: 1));
+
     await changeRegistrationStatus(
         RegistrationProcess.PREPARING, setBottomSheetState);
-    // final Map<String, dynamic> cred = {
-    //   'ssid': DEVICE_SSID,
-    //   'password': DEVICE_PASSWORD,
-    // };
+    final Map<String, dynamic> cred = {
+      'ssid': DEVICE_SSID,
+      'password': DEVICE_PASSWORD,
+    };
+
     await changeRegistrationStatus(
         RegistrationProcess.SEARCHING, setBottomSheetState);
-    //var result = await platform.invokeMethod("register", cred);
-    //print(result.runtimeType);
-    // String ssid = await Wifi.ssid;
+    // await platform.invokeMethod("register", cred);
+
     await changeRegistrationStatus(
         RegistrationProcess.ESTABLISHING, setBottomSheetState);
+    String ssid = await Wifi.ssid;
     // while (ssid != DEVICE_SSID) {
     //   ssid = await Wifi.ssid;
     // }
+
     await changeRegistrationStatus(
         RegistrationProcess.REGISTERING, setBottomSheetState);
     // connectToServer();
+
     await changeRegistrationStatus(
         RegistrationProcess.WAITING, setBottomSheetState);
+
     await changeRegistrationStatus(
         RegistrationProcess.FINISHING, setBottomSheetState);
-    // var device = Device(name: "Purifier", uv: false);
-    // setState(() {
-    //   deviceList.add(device);
-    // });
+    var device = Device.newDevice(name: deviceNameTemp, id: deviceIdTemp);
+    setState(() {
+      deviceList.add(device);
+    });
+
     await changeRegistrationStatus(
         RegistrationProcess.OVER, setBottomSheetState);
     await Future.delayed(Duration(milliseconds: 500));
@@ -431,6 +139,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   addDevicePopup() async {
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController idController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
     homeSSID = await Wifi.ssid;
     await showDialog(
       barrierDismissible: false,
@@ -474,14 +185,14 @@ class _HomePageState extends State<HomePage> {
                   labelText: "Wifi Password",
                   focusColor: Colors.black,
                   labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(
+                  border: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: BorderSide(
                       color: Colors.black,
                       style: BorderStyle.solid,
                     ),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: BorderSide(
                       color: Colors.black,
@@ -501,14 +212,14 @@ class _HomePageState extends State<HomePage> {
                   labelText: "Enter your Device ID",
                   focusColor: Colors.black,
                   labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(
+                  border: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: BorderSide(
                       color: Colors.black,
                       style: BorderStyle.solid,
                     ),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: BorderSide(
                       color: Colors.black,
@@ -517,6 +228,32 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 controller: idController,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              child: TextField(
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  labelText: "Name your Device",
+                  focusColor: Colors.black,
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                ),
+                controller: nameController,
               ),
             ),
             Padding(
@@ -533,8 +270,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () {
                       homePass = passwordController.text;
-                      deviceId = int.parse(idController.text);
+                      deviceIdTemp = int.parse(idController.text);
+                      deviceNameTemp = nameController.text;
                       idController.text = "";
+                      nameController.text = "";
                       Navigator.pop(context);
                     }),
               ),
@@ -545,19 +284,166 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  addNewSchedule() {
-    if (deviceList.isNotEmpty) if (deviceList[0].schedules.length < 5)
-      setState(() {
-        deviceList[0].schedules.add(ScheduleData(
-            TimeOfDay(hour: 6, minute: 15),
-            TimeOfDay(hour: 7, minute: 15),
-            false,
-            [false, false, false, false, false, false, false]));
-      });
-    else
-      Fluttertoast.showToast(
-        msg: "Cannot add more than 5 schedules",
-      );
+  showBottomSheet() async {
+    await showModalBottomSheet(
+        backgroundColor: Colors.white,
+        enableDrag: false,
+        isDismissible: false,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+        ),
+        builder: (contextPopUp) {
+          if (!contextStack.contains(contextPopUp)) {
+            contextStack.add(contextPopUp);
+            startRegistrationProcess();
+          }
+          return StatefulBuilder(builder: (context, setStateOfBottomSheet) {
+            setBottomSheetState = setStateOfBottomSheet;
+            return bottomSheetWidgets();
+          });
+        });
+  }
+
+  Widget bottomSheetWidgets() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      children: <Widget>[
+        Divider(
+          thickness: 2,
+          color: Colors.black,
+          indent: 2 * MediaQuery.of(context).size.width / 4,
+          endIndent: 2 * MediaQuery.of(context).size.width / 4,
+        ),
+        Container(
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                child: SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(
+                        backgroundColor: Colors.black12, strokeWidth: 2)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  RegistrationProcess.currentStatusString,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 0
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.PREPARING),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 1
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.SEARCHING),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 2
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.ESTABLISHING),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 3
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.REGISTERING),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 4
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.WAITING),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      RegistrationProcess.currentStatus > 5
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(RegistrationProcess.FINISHING),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Divider(
+          thickness: 2,
+          color: Colors.black,
+          indent: 2 * MediaQuery.of(context).size.width / 4,
+          endIndent: 2 * MediaQuery.of(context).size.width / 4,
+        )
+      ],
+    );
   }
 }
 
@@ -606,7 +492,7 @@ class _GeneralState extends State<General> {
                             color: Colors.black,
                           ),
                           title:
-                              Text('Ibis Sterilizer ${deviceList[index].name}'),
+                              Text(deviceList[index].name),
                           onTap: () {
                             Navigator.push(
                                 context,

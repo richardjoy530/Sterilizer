@@ -1,4 +1,5 @@
 import 'package:Sterilizer/model/data.dart';
+import 'package:Sterilizer/utils/popups.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 String localStates = "";
@@ -24,6 +25,10 @@ class FirebaseManager {
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
+    db.child(device.id.toString()).child("motionDetected").once().then((value) {
+      if (value.value == 2) motionDetectedPopUp(device);
+    });
+
     return device;
   }
 
