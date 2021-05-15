@@ -1,4 +1,5 @@
 import 'package:Sterilizer/model/data.dart';
+import 'package:Sterilizer/utils/popups.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ class ScheduleTile extends StatefulWidget {
   final ScheduleData scheduleData;
   final Device device;
 
-  ScheduleTile(this.scheduleData,this.device,{Key key}):super(key: key);
+  ScheduleTile(this.scheduleData, this.device, {Key key}) : super(key: key);
 
   @override
   _ScheduleTileState createState() => _ScheduleTileState();
@@ -16,7 +17,9 @@ class _ScheduleTileState extends State<ScheduleTile> {
   String startTime = "6:30";
   String endTime = "7:30";
   String toggle = "idleOn";
+
   ScheduleData get scheduleData => widget.scheduleData;
+
   Device get device => widget.device;
 
   @override
@@ -62,29 +65,51 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Schedule'),
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            scheduleData.state = !scheduleData.state;
+                            toggle = scheduleData.state == true
+                                ? "toggleOn"
+                                : "toggleOff";
+                            scheduleData.isDirty = true;
+                            device.updateDevice();
+                          });
+                        },
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          child: FlareActor("assets/Toggle.flr",
+                              alignment: Alignment.center,
+                              fit: BoxFit.contain,
+                              animation: toggle),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      scheduleData.state = !scheduleData.state;
-                      toggle = scheduleData.state == true ? "toggleOn" : "toggleOff";
-                      scheduleData.isDirty=true;
-                      device.updateDevice();
-                    });
-                  },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    child: FlareActor("assets/Toggle.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.contain,
-                        animation: toggle),
-                  ),
-                ),
+                IconButton(
+                    icon: Icon(Icons.delete_outline_outlined),
+                    onPressed: () {
+                      deleteSchedulePopup().then((value) {
+                        if (value) {
+                          setState(() {
+                            device.schedules
+                                .where((element) =>
+                                    element.scheduleId ==
+                                    scheduleData.scheduleId)
+                                .first
+                                .deleteSchedule();
+                            device.schedules.removeWhere((element) =>
+                                element.scheduleId == scheduleData.scheduleId);
+                            device.isSchedulesDirty = true;
+                            device.updateDevice();
+                            device.schedulePageSetState.call();
+                          });
+                        }
+                      });
+                    }),
               ],
             ),
             Row(
@@ -124,7 +149,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                                   .toString()
                                           : scheduleData.startTime.minute
                                               .toString();
-                                  scheduleData.isDirty=true;
+                                  scheduleData.isDirty = true;
                                   device.updateDevice();
                                 });
                             });
@@ -174,7 +199,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                       ? "0" +
                                           scheduleData.endTime.minute.toString()
                                       : scheduleData.endTime.minute.toString();
-                                  scheduleData.isDirty=true;
+                                  scheduleData.isDirty = true;
                                   device.updateDevice();
                                 });
                             });
@@ -202,7 +227,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[0] = !scheduleData.days[0];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -211,7 +236,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[1] = !scheduleData.days[1];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -220,7 +245,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[2] = !scheduleData.days[2];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -229,7 +254,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[3] = !scheduleData.days[3];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -238,7 +263,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[4] = !scheduleData.days[4];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -247,7 +272,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[5] = !scheduleData.days[5];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -256,7 +281,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[6] = !scheduleData.days[6];
-                        scheduleData.isDirty=true;
+                        scheduleData.isDirty = true;
                         device.updateDevice();
                       });
                     },

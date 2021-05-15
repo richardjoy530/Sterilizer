@@ -17,6 +17,16 @@ class _SchedulePageState extends State<SchedulePage> {
   Device get device => widget.device;
 
   @override
+  void initState() {
+    super.initState();
+    device.setSchedulePageState(() {
+      setState(() {
+        device.schedules.length;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -35,14 +45,18 @@ class _SchedulePageState extends State<SchedulePage> {
             Expanded(
               child: ListView.builder(
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                      onLongPress: () {
-                        deleteSchedule(index);
-                      },
-                      child: ScheduleTile(device.schedules[index], device,
-                          key: UniqueKey()));
+                  return index < device.schedules.length
+                      ? GestureDetector(
+                          onLongPress: () {
+                            deleteSchedule(index);
+                          },
+                          child: ScheduleTile(device.schedules[index], device,
+                              key: UniqueKey()))
+                      : SizedBox(
+                          height: 100,
+                        );
                 },
-                itemCount: deviceList.isNotEmpty ? device.schedules.length : 0,
+                itemCount: device.schedules.length + 1,
               ),
             )
           ],
@@ -79,7 +93,7 @@ class _SchedulePageState extends State<SchedulePage> {
         setState(() {
           device.schedules[index].deleteSchedule();
           device.schedules.removeAt(index);
-          device.isSchedulesDirty=true;
+          device.isSchedulesDirty = true;
           device.updateDevice();
         });
       }

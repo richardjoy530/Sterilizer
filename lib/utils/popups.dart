@@ -1,6 +1,5 @@
 import 'package:Sterilizer/model/data.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 motionDetectedPopUp(Device device) async {
   await showDialog(
@@ -61,7 +60,7 @@ Future<bool> deleteSchedulePopup() async {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          backgroundColor: Color(0xffe8e8e8),
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
