@@ -24,24 +24,22 @@ class FirebaseManager {
     db.child(device.id.toString()).child("connectedWifi").set(device.connectedWifi);
   }
 
-  static sync(Device device) {
-    db
+  static sync(Device device) async {
+    await db
         .child(device.id.toString())
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
-    db
+    await db
         .child(device.id.toString())
         .child("connectedWifi")
         .once()
         .then((value) => device.connectedWifi = value.value);
 
     // Checking if motion was detected previously and machine was stopped.
-    db.child(device.id.toString()).child("motionDetected").once().then((value) {
+    await db.child(device.id.toString()).child("motionDetected").once().then((value) {
       if (value.value == 2) motionDetectedPopUp(device);
     });
-
-    return device;
   }
 
   static updateSchedules(Device device) {
