@@ -4,21 +4,25 @@ import 'package:flutter/material.dart';
 
 class ScheduleTile extends StatefulWidget {
   final ScheduleData scheduleData;
+  final Device device;
 
-  ScheduleTile(this.scheduleData,{Key key}):super(key: key);
+  ScheduleTile(this.scheduleData,this.device,{Key key}):super(key: key);
 
   @override
-  _ScheduleTileState createState() => _ScheduleTileState(scheduleData);
+  _ScheduleTileState createState() => _ScheduleTileState();
 }
 
 class _ScheduleTileState extends State<ScheduleTile> {
   String startTime = "6:30";
   String endTime = "7:30";
-  final ScheduleData scheduleData;
+  String toggle = "idleOn";
+  ScheduleData get scheduleData => widget.scheduleData;
+  Device get device => widget.device;
 
   @override
   void initState() {
     super.initState();
+    toggle = scheduleData.state == true ? "idleOn" : "idleOff";
     endTime = scheduleData.endTime.hourOfPeriod == 0
         ? "12:"
         : scheduleData.endTime.hourOfPeriod.toString() + ":";
@@ -32,8 +36,6 @@ class _ScheduleTileState extends State<ScheduleTile> {
         ? "0" + scheduleData.startTime.minute.toString()
         : scheduleData.startTime.minute.toString();
   }
-
-  _ScheduleTileState(this.scheduleData);
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,9 @@ class _ScheduleTileState extends State<ScheduleTile> {
                   onTap: () {
                     setState(() {
                       scheduleData.state = !scheduleData.state;
-                      deviceList[0].updateSchedules();
+                      toggle = scheduleData.state == true ? "toggleOn" : "toggleOff";
+                      scheduleData.isDirty=true;
+                      device.updateDevice();
                     });
                   },
                   child: Container(
@@ -78,7 +82,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     child: FlareActor("assets/Toggle.flr",
                         alignment: Alignment.center,
                         fit: BoxFit.contain,
-                        animation: scheduleData.state == true ? "on" : "off"),
+                        animation: toggle),
                   ),
                 ),
               ],
@@ -120,7 +124,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                                   .toString()
                                           : scheduleData.startTime.minute
                                               .toString();
-                                  deviceList[0].updateSchedules();
+                                  scheduleData.isDirty=true;
+                                  device.updateDevice();
                                 });
                             });
                           },
@@ -169,7 +174,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                       ? "0" +
                                           scheduleData.endTime.minute.toString()
                                       : scheduleData.endTime.minute.toString();
-                                  deviceList[0].updateSchedules();
+                                  scheduleData.isDirty=true;
+                                  device.updateDevice();
                                 });
                             });
                           },
@@ -196,7 +202,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[0] = !scheduleData.days[0];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("S", scheduleData.days[0])),
@@ -204,7 +211,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[1] = !scheduleData.days[1];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("M", scheduleData.days[1])),
@@ -212,7 +220,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[2] = !scheduleData.days[2];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("T", scheduleData.days[2])),
@@ -220,7 +229,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[3] = !scheduleData.days[3];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("W", scheduleData.days[3])),
@@ -228,7 +238,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[4] = !scheduleData.days[4];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("T", scheduleData.days[4])),
@@ -236,7 +247,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[5] = !scheduleData.days[5];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("F", scheduleData.days[5])),
@@ -244,7 +256,8 @@ class _ScheduleTileState extends State<ScheduleTile> {
                     onTap: () {
                       setState(() {
                         scheduleData.days[6] = !scheduleData.days[6];
-                        deviceList[0].updateSchedules();
+                        scheduleData.isDirty=true;
+                        device.updateDevice();
                       });
                     },
                     child: WeekSelector("S", scheduleData.days[6])),

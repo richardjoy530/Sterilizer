@@ -43,7 +43,7 @@ motionDetectedPopUp(Device device) async {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    device.motionReset();
+                    device.resetMotion();
                     Navigator.pop(context);
                   }),
             ),
@@ -223,17 +223,4 @@ enterPasswordPopUp() async {
       );
     },
   );
-}
-
-addNewSchedule() {
-  if (deviceList.isNotEmpty) if (deviceList[0].schedules.length < 5)
-    deviceList[0].schedules.add(ScheduleData(
-        TimeOfDay(hour: 6, minute: 15),
-        TimeOfDay(hour: 7, minute: 15),
-        false,
-        [false, false, false, false, false, false, false]));
-  else
-    Fluttertoast.showToast(
-      msg: "Cannot add more than 5 schedules",
-    );
 }

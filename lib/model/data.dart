@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:Sterilizer/model/db_helper.dart';
@@ -69,68 +70,155 @@ class RegistrationProcess {
 }
 
 class Device {
-  String name;
   int id;
-  bool uv = false;
-  bool appConnected = true;
-  List<ScheduleData> schedules = [];
-  Null Function() _state;
 
-  Device.newDevice({this.name, this.id}) {
+  String _name;
+  bool isNameDirty = false;
+
+  set name(String name) {
+    isNameDirty = true;
+    this._name = name;
+  }
+
+  String get name => this._name;
+
+  bool _uv;
+  bool isUVDirty = false;
+
+  set uv(bool uv) {
+    isUVDirty = true;
+    this._uv = uv;
+  }
+
+  bool get uv => this._uv;
+
+  List<ScheduleData> _schedules;
+  bool isSchedulesDirty = false;
+
+  set schedules(List<ScheduleData> schedules) {
+    isSchedulesDirty = true;
+    this._schedules = schedules;
+  }
+
+  List<ScheduleData> get schedules => this._schedules;
+
+  Void Function() _state;
+
+  setTheState(Void Function() param0) => _state = param0;
+
+  Device.newDevice({String name, this.id}) {
+    this._name = name;
     FirebaseManager.add(this);
     DataBaseHelper.addDevice(this);
-    listenChanges();
+    watchForMotion();
   }
 
-  Device.fromDB({this.name, this.id, this.schedules}){
+  Device.fromDB({String name, this.id, List<ScheduleData> schedules}) {
+    this._name = name;
+    this._schedules = schedules;
     sync();
-    listenChanges();
-  }
-
-  setTheState(Null Function() param0) {
-    _state = param0;
+    watchForMotion();
   }
 
   sync() async {
     await FirebaseManager.sync(this);
   }
 
-  updateSchedules() async {
+  updateDevice() async {
+    //--------Firebase--
+    if (isUVDirty) FirebaseManager.updateUV(this);
+    if (isSchedulesDirty) FirebaseManager.updateSchedules(this);
+    //--------DB--------
+    if (isNameDirty) DataBaseHelper.updateDevice(this);
     schedules.forEach((scheduleData) {
-      DataBaseHelper.updateSchedule(scheduleData);
+      if (scheduleData.isDirty) DataBaseHelper.updateSchedule(scheduleData);
+      scheduleData.isDirty = false;
     });
-    await FirebaseManager.updateSchedules(this);
+    isUVDirty = false;
+    isNameDirty = false;
+    isSchedulesDirty = false;
   }
 
-  listenChanges() {
+  deleteDevice() async {
+    DataBaseHelper.removeDevice(this);
+    schedules.forEach((scheduleData) {
+      DataBaseHelper.removeSchedule(scheduleData.scheduleId);
+    });
+  }
+
+  watchForMotion() {
     FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
       if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
         motionDetectedPopUp(this);
         uv = false;
-        switchUV();
+        updateDevice();
         if (context.widget.runtimeType == DevicePage) _state.call();
       }
     });
   }
 
-  motionReset() {
+  resetMotion() {
     FirebaseManager.motionReset(this);
-  }
-
-  switchUV() async {
-    await FirebaseManager.switchUV(this);
   }
 }
 
 class ScheduleData {
-  TimeOfDay startTime;
-  TimeOfDay endTime;
-  bool state;
-  List<bool> days = [true, true, true, true, true, true, true];
+  bool isDirty = false;
   int scheduleId;
 
-  ScheduleData(this.startTime, this.endTime, this.state, this.days) {
+  TimeOfDay _startTime;
+
+  set startTime(TimeOfDay startTime) {
+    isDirty = true;
+    this._startTime = startTime;
+  }
+
+  TimeOfDay get startTime => this._startTime;
+
+  TimeOfDay _endTime;
+
+  set endTime(TimeOfDay endTime) {
+    isDirty = true;
+    this._endTime = endTime;
+  }
+
+  TimeOfDay get endTime => this._endTime;
+
+  bool _state;
+
+  set state(bool state) {
+    isDirty = true;
+    this._state = state;
+  }
+
+  bool get state => this._state;
+
+  List<bool> _days = [true, true, true, true, true, true, true];
+
+  set days(List<bool> days) {
+    isDirty = true;
+    print("setting fo days");
+    this._days = days;
+  }
+
+  List<bool> get days => this._days;
+
+  ScheduleData(
+      {TimeOfDay startTime,
+      TimeOfDay endTime,
+      bool state,
+      List<bool> days,
+      int deviceId}) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.state = state;
+    this.days = days;
     scheduleId = DateTime.now().millisecondsSinceEpoch;
+    DataBaseHelper.addSchedule(this, deviceId);
+  }
+
+  deleteSchedule() {
+    DataBaseHelper.removeSchedule(scheduleId);
   }
 
   ScheduleData.fromString(String dataInString, int id) {

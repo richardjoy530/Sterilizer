@@ -32,9 +32,8 @@ class DataBaseHelper {
       var schedules = await getSchedulesForDevice(map["deviceId"]);
       devices.add(Device.fromDB(
           id: map['deviceId'], name: map["deviceName"], schedules: schedules));
-      return devices;
     }
-    return [];
+    return devices;
   }
 
   static removeDevice(Device device) =>
