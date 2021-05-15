@@ -26,7 +26,7 @@ class DataBaseHelper {
       db.insert("Devices", {"deviceId": device.id, "deviceName": device.name});
 
   static Future<List<Device>> getAllDevices() async {
-    List<Device> devices=[];
+    List<Device> devices = [];
     var value = await db.query("Devices");
     for (var map in value) {
       var schedules = await getSchedulesForDevice(map["deviceId"]);
@@ -59,7 +59,7 @@ class DataBaseHelper {
           where: "scheduleId= ${scheduleData.scheduleId}");
 
   static Future<List<ScheduleData>> getSchedulesForDevice(int deviceId) async {
-    List<ScheduleData> schedules=[];
+    List<ScheduleData> schedules = [];
     var value = await db.query("Schedules", where: "deviceId = $deviceId");
     for (var map in value)
       schedules

@@ -72,6 +72,9 @@ class RegistrationProcess {
 class Device {
   int id;
 
+  String connectedWifi;
+  bool isWifiDirty = false;
+
   String _name;
   bool isNameDirty = false;
 
@@ -82,7 +85,7 @@ class Device {
 
   String get name => this._name;
 
-  bool _uv=false;
+  bool _uv = false;
   bool isUVDirty = false;
 
   set uv(bool uv) {
@@ -92,7 +95,7 @@ class Device {
 
   bool get uv => this._uv;
 
-  List<ScheduleData> _schedules=[];
+  List<ScheduleData> _schedules = [];
   bool isSchedulesDirty = false;
 
   set schedules(List<ScheduleData> schedules) {
@@ -102,14 +105,17 @@ class Device {
 
   List<ScheduleData> get schedules => this._schedules;
 
-  void Function() _setState;
+  void Function() devicePageSetState;
+  static void Function() homePageSetState;
   void Function() schedulePageSetState;
 
   setSchedulePageState(void Function() param0) => schedulePageSetState = param0;
 
-  setTheState(void Function() param0) => _setState = param0;
+  static setHomePageState(void Function() param0) => homePageSetState = param0;
 
-  Device.newDevice({String name, this.id}) {
+  setDevicePageState(void Function() param0) => devicePageSetState = param0;
+
+  Device.newDevice({String name, this.id, this.connectedWifi}) {
     this._name = name;
     FirebaseManager.add(this);
     DataBaseHelper.addDevice(this);
@@ -123,24 +129,38 @@ class Device {
     watchForMotion();
   }
 
-  Device.fromFire({String name,this.id}){
+  Device.fromFire({String name, this.id}) {
     this._name = name;
-    FirebaseManager.getDevice(this);
-    sync();
-    watchForMotion();
+    FirebaseManager.getDevice(this).then((device) {
+      DataBaseHelper.addDevice(this);
+      sync();
+      watchForMotion();
+    });
 
   }
 
   sync() async {
     await FirebaseManager.sync(this);
+    homePageSetState.call();
+    devicePageSetState.call();
   }
 
   updateDevice() async {
     //--------Firebase--
     if (isUVDirty) FirebaseManager.updateUV(this);
     if (isSchedulesDirty) FirebaseManager.updateSchedules(this);
+    if (isWifiDirty) {
+      FirebaseManager.updateWifi(this);
+      devicePageSetState.call();
+      homePageSetState.call();
+    }
+
     //--------DB--------
-    if (isNameDirty) DataBaseHelper.updateDevice(this);
+    if (isNameDirty) {
+      DataBaseHelper.updateDevice(this);
+      homePageSetState.call();
+      devicePageSetState.call();
+    }
     schedules.forEach((scheduleData) {
       if (scheduleData.isDirty) DataBaseHelper.updateSchedule(scheduleData);
       scheduleData.isDirty = false;
@@ -148,6 +168,7 @@ class Device {
     isUVDirty = false;
     isNameDirty = false;
     isSchedulesDirty = false;
+    isWifiDirty = false;
   }
 
   deleteDevice() async {
@@ -163,7 +184,7 @@ class Device {
         motionDetectedPopUp(this);
         uv = false;
         updateDevice();
-        if (context.widget.runtimeType == DevicePage) _setState.call();
+        if (context.widget.runtimeType == DevicePage) devicePageSetState.call();
       }
     });
   }

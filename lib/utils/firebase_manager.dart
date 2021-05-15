@@ -10,6 +10,7 @@ class FirebaseManager {
   static add(Device device) {
     db.child(device.id.toString()).child("motionDetected").set(1);
     db.child(device.id.toString()).child("uv").set("OFF");
+    db.child(device.id.toString()).child("connectedWifi").set(device.connectedWifi);
   }
 
   static updateUV(Device device) async {
@@ -19,12 +20,22 @@ class FirebaseManager {
       db.child(device.id.toString()).child("uv").set("OFF");
   }
 
+  static updateWifi(Device device){
+    db.child(device.id.toString()).child("connectedWifi").set(device.connectedWifi);
+  }
+
   static sync(Device device) {
     db
         .child(device.id.toString())
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
+    db
+        .child(device.id.toString())
+        .child("connectedWifi")
+        .once()
+        .then((value) => device.connectedWifi = value.value);
+
     // Checking if motion was detected previously and machine was stopped.
     db.child(device.id.toString()).child("motionDetected").once().then((value) {
       if (value.value == 2) motionDetectedPopUp(device);
@@ -78,8 +89,19 @@ class FirebaseManager {
     return encodedValue;
   }
 
-  static void getDevice(Device device) {
-    db
+  static Future<Device> getDevice(Device device) async {
+    await db
+        .child(device.id.toString())
+        .child("uv")
+        .once()
+        .then((value) => device.uv = value.value == "OFF" ? false : true);
+
+    await db
+        .child(device.id.toString())
+        .child("connectedWifi")
+        .once()
+        .then((value) => device.connectedWifi = value.value);
+    await db
         .child(device.id.toString())
         .child("schedules")
         .once()
@@ -87,5 +109,6 @@ class FirebaseManager {
           print(value);
     }
     );
+    return device;
   }
 }
