@@ -28,7 +28,6 @@ class _DevicePageState extends State<DevicePage> {
       setState(() {
         toggle = "toggleOff";
       });
-      return;
     });
   }
 

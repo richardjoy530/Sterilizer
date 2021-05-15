@@ -82,7 +82,7 @@ class Device {
 
   String get name => this._name;
 
-  bool _uv;
+  bool _uv=false;
   bool isUVDirty = false;
 
   set uv(bool uv) {
@@ -92,7 +92,7 @@ class Device {
 
   bool get uv => this._uv;
 
-  List<ScheduleData> _schedules;
+  List<ScheduleData> _schedules=[];
   bool isSchedulesDirty = false;
 
   set schedules(List<ScheduleData> schedules) {
@@ -102,9 +102,12 @@ class Device {
 
   List<ScheduleData> get schedules => this._schedules;
 
-  Void Function() _state;
+  void Function() _setState;
+  void Function() schedulePageSetState;
 
-  setTheState(Void Function() param0) => _state = param0;
+  setSchedulePageState(void Function() param0) => schedulePageSetState = param0;
+
+  setTheState(void Function() param0) => _setState = param0;
 
   Device.newDevice({String name, this.id}) {
     this._name = name;
@@ -118,6 +121,14 @@ class Device {
     this._schedules = schedules;
     sync();
     watchForMotion();
+  }
+
+  Device.fromFire({String name,this.id}){
+    this._name = name;
+    FirebaseManager.getDevice(this);
+    sync();
+    watchForMotion();
+
   }
 
   sync() async {
@@ -152,7 +163,7 @@ class Device {
         motionDetectedPopUp(this);
         uv = false;
         updateDevice();
-        if (context.widget.runtimeType == DevicePage) _state.call();
+        if (context.widget.runtimeType == DevicePage) _setState.call();
       }
     });
   }

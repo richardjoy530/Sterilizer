@@ -77,4 +77,15 @@ class FirebaseManager {
       encodedValue = encodedValue.replaceRange(6, 7, '1');
     return encodedValue;
   }
+
+  static void getDevice(Device device) {
+    db
+        .child(device.id.toString())
+        .child("schedules")
+        .once()
+        .then((value) {
+          print(value);
+    }
+    );
+  }
 }
