@@ -16,13 +16,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
       - name: Install flutter
         run: |
           sudo apt-get update
           sudo snap install flutter --classic
-
+          
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        
       - name: Install dependencies
         run: flutter pub get
 
