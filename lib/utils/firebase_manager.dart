@@ -12,7 +12,7 @@ class FirebaseManager {
     db.child(device.id.toString()).child("uv").set("OFF");
   }
 
-  static switchUV(Device device) async {
+  static updateUV(Device device) async {
     if (device.uv)
       db.child(device.id.toString()).child("uv").set("ON");
     else
@@ -25,6 +25,7 @@ class FirebaseManager {
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
+    // Checking if motion was detected previously and machine was stopped.
     db.child(device.id.toString()).child("motionDetected").once().then((value) {
       if (value.value == 2) motionDetectedPopUp(device);
     });

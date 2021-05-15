@@ -1,7 +1,6 @@
 import 'package:Sterilizer/model/db_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wifi/wifi.dart';
 
 import '../model/data.dart';
 import 'home_page.dart';
@@ -27,12 +26,14 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Container(
-          width: 50,
-          child: Image.asset('images/icon.png'),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Container(
+            width: 50,
+            child: Image.asset('images/icon.png'),
+          ),
         ),
       ),
     );

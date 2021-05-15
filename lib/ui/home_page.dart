@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Sterilizer/ui/device_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wifi/wifi.dart';
 
 import '../model/data.dart';
@@ -30,12 +30,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: General(),
-      floatingActionButton: Visibility(
-        child: FloatingActionButton.extended(
+    return SafeArea(
+      child: Scaffold(
+        body: General(),
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            onAddDevicePressed(context);
+            onAddDevicePressed();
           },
           label: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,13 +48,16 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  void connectToServer() {
+  bool ack = false;
+  Future<void> connectToServer() async {
+    ack = false;
     serverSocket?.close();
-    ServerSocket.bind("0.0.0.0", 5555).then((value) {
-      serverSocket = value;
-      value.listen((event) {}).onData((data) => sendCredentials(data));
-    });
+    serverSocket = await ServerSocket.bind("0.0.0.0", 5555);
+    serverSocket.listen((event) { sendCredentials(event); });
+    while (ack==false){
+      print("Waiting for acknowledgment");
+      await Future.delayed(Duration(seconds: 1));
+    }
   }
 
   sendCredentials(Socket data) {
@@ -62,22 +65,25 @@ class _HomePageState extends State<HomePage> {
     print(homePass);
     data.write(homeSSID + "\r");
     data.write(homePass + "\r");
-    data.listen((event) async {
-      print(String.fromCharCodes(event));
-      if (String.fromCharCodes(event)[0] == '1') {
-        final Map<String, dynamic> cred = {
-          'ssid': homeSSID,
-          'password': homePass,
-        };
-        platform.invokeMethod("connectHome", cred);
-        Wifi.connection(homeSSID, homePass);
-        data?.close();
-        serverSocket?.close();
-      }
-    });
+    ack = true;
+    data?.close();
+    serverSocket?.close();
+    // data.listen((event) async {
+    //   print(String.fromCharCodes(event));
+    //   if (String.fromCharCodes(event)[0] == '1') {
+    //     final Map<String, dynamic> cred = {
+    //       'ssid': homeSSID,
+    //       'password': homePass,
+    //     };
+    //     platform.invokeMethod("connectHome", cred);
+    //
+    //     data?.close();
+    //     serverSocket?.close();
+    //   }
+    // });
   }
 
-  onAddDevicePressed(BuildContext context) async {
+  onAddDevicePressed() async {
     RegistrationProcess.currentStatus = 0;
     RegistrationProcess.currentStatusString = RegistrationProcess.PREPARING;
     await addDevicePopup();
@@ -92,7 +98,7 @@ class _HomePageState extends State<HomePage> {
 
     await changeRegistrationStatus(
         RegistrationProcess.PREPARING, setBottomSheetState);
-    final Map<String, dynamic> cred = {
+    Map<String, dynamic> cred = {
       'ssid': DEVICE_SSID,
       'password': DEVICE_PASSWORD,
     };
@@ -110,7 +116,8 @@ class _HomePageState extends State<HomePage> {
 
     await changeRegistrationStatus(
         RegistrationProcess.REGISTERING, setBottomSheetState);
-    // connectToServer();
+    // await connectToServer();
+    await Future.delayed(Duration(seconds: 5));
 
     await changeRegistrationStatus(
         RegistrationProcess.WAITING, setBottomSheetState);
@@ -139,7 +146,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   addDevicePopup() async {
-    TextEditingController passwordController = TextEditingController();
+    TextEditingController passwordController = TextEditingController(text: homePass);
     TextEditingController idController = TextEditingController();
     TextEditingController nameController = TextEditingController();
     homeSSID = await Wifi.ssid;
