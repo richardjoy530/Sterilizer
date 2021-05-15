@@ -223,3 +223,74 @@ enterPasswordPopUp() async {
     },
   );
 }
+
+renameDevicePopUp(Device device) async {
+  TextEditingController nameController = TextEditingController();
+  await showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (contextPopUp) {
+      contextStack.add(contextPopUp);
+      return SimpleDialog(
+        backgroundColor: Color(0xffe8e8e8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Rename Device',
+          textAlign: TextAlign.center,
+        ),
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+            child: TextField(
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                labelText: "Name your Device",
+                focusColor: Colors.black,
+                labelStyle: TextStyle(color: Colors.black),
+                border: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  borderSide: BorderSide(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              controller: nameController,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: Color(0xff060606),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    device.name = nameController.text;
+                    device.isNameDirty = true;
+                    device.updateDevice();
+                    Navigator.pop(contextStack.removeLast());
+                  }),
+            ),
+          )
+        ],
+      );
+    },
+  );
+  if (contextStack.last.widget.runtimeType == Builder)
+    contextStack.removeLast();
+}
