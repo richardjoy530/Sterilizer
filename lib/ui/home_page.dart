@@ -1,11 +1,6 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:Sterilizer/ui/device_page.dart';
 import 'package:Sterilizer/ui/registration_process.dart';
 import 'package:Sterilizer/utils/popups.dart';
 import 'package:flutter/material.dart';
-import 'package:wifi/wifi.dart';
 
 import '../model/data.dart';
 import 'dashboard_container.dart';

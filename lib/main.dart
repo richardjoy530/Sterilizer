@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'ui/loading.dart';
 
 void main() => runApp(MyApp());
