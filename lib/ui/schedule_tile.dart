@@ -106,7 +106,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                 element.scheduleId == scheduleData.scheduleId);
                             device.isSchedulesDirty = true;
                             device.updateDevice();
-                            device.schedulePageSetState.call();
+                            device.schedulePageSetState?.call();
                           });
                         }
                       });

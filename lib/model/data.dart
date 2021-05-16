@@ -141,8 +141,8 @@ class Device {
 
   sync() async {
     await FirebaseManager.sync(this);
-    homePageSetState.call();
-    devicePageSetState.call();
+    homePageSetState?.call();
+    devicePageSetState?.call();
   }
 
   updateDevice() async {
@@ -151,15 +151,15 @@ class Device {
     if (isSchedulesDirty) FirebaseManager.updateSchedules(this);
     if (isWifiDirty) {
       FirebaseManager.updateWifi(this);
-      devicePageSetState.call();
-      homePageSetState.call();
+      devicePageSetState?.call();
+      homePageSetState?.call();
     }
 
     //--------DB--------
     if (isNameDirty) {
       DataBaseHelper.updateDevice(this);
-      homePageSetState.call();
-      devicePageSetState.call();
+      homePageSetState?.call();
+      devicePageSetState?.call();
     }
     schedules.forEach((scheduleData) {
       if (scheduleData.isDirty) DataBaseHelper.updateSchedule(scheduleData);
@@ -184,7 +184,7 @@ class Device {
         motionDetectedPopUp(this);
         uv = false;
         updateDevice();
-        if (context.widget.runtimeType == DevicePage) devicePageSetState.call();
+        if (context.widget.runtimeType == DevicePage) devicePageSetState?.call();
       }
     });
   }
