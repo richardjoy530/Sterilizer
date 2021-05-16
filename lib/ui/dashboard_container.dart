@@ -1,4 +1,5 @@
 import 'package:Sterilizer/model/data.dart';
+import 'package:Sterilizer/ui/widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'device_page.dart';
@@ -36,29 +37,19 @@ class _GeneralState extends State<General> {
                 child: ListView.builder(
                     itemCount: deviceList.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
+                      return genericTile(
+                          text: deviceList[index].name,
+                          subTitle: deviceList[index].connectedWifi,
                           color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                        ),
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.wifi_tethering_rounded,
-                            color: Colors.black,
-                          ),
+                          leadingIcon: Icons.wifi_tethering_rounded,
                           trailing: Icon(Icons.arrow_forward_ios_rounded),
-                          title: Text(deviceList[index].name),
-                          subtitle: Text(deviceList[index].connectedWifi),
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         DevicePage(deviceList[index])));
-                          },
-                        ),
-                      );
+                          });
                     })),
           ),
         )
