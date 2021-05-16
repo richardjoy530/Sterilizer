@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
               topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
         ),
         builder: (context) {
-          return RegistrationProcessWidgets();
+          return RegistrationProcessWidgets(true);
         });
   }
 }

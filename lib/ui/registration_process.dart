@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:wifi/wifi.dart';
 
 class RegistrationProcessWidgets extends StatefulWidget {
-  const RegistrationProcessWidgets({Key key}) : super(key: key);
+  final bool newDevice;
+  final Device device;
+
+  const RegistrationProcessWidgets(this.newDevice, {this.device, Key key})
+      : super(key: key);
 
   @override
   _RegistrationProcessWidgetsState createState() =>
@@ -15,6 +19,8 @@ class RegistrationProcessWidgets extends StatefulWidget {
 class _RegistrationProcessWidgetsState
     extends State<RegistrationProcessWidgets> {
   bool ack = false;
+
+  Device get device => widget.device;
 
   @override
   void initState() {
@@ -185,12 +191,18 @@ class _RegistrationProcessWidgetsState
 
     await changeRegistrationStatus(RegistrationProcess.FINISHING);
     if (mounted) {
-      var device = Device.newDevice(
-          name: deviceNameTemp, id: deviceIdTemp, connectedWifi: homeSSID);
-      setState(() {
-        deviceList.add(device);
-        Device.homePageSetState?.call();
-      });
+      if (widget.newDevice) {
+        var device = Device.newDevice(
+            name: deviceNameTemp, id: deviceIdTemp, connectedWifi: homeSSID);
+        setState(() {
+          deviceList.add(device);
+          Device.homePageSetState?.call();
+        });
+      } else {
+        device.connectedWifi = homeSSID;
+        device.isWifiDirty = true;
+        device.updateDevice();
+      }
     }
 
     await changeRegistrationStatus(RegistrationProcess.OVER);

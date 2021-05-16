@@ -75,7 +75,7 @@ class Device {
   String connectedWifi = "Checking..";
   bool isWifiDirty = false;
 
-  String name;
+  String name='Device';
   bool isNameDirty = false;
 
   bool uv = false;
