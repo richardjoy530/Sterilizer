@@ -40,7 +40,6 @@ class _LoadingState extends State<Loading> {
   }
 
   load() async {
-    prefs = await SharedPreferences.getInstance();
     DataBaseHelper.initializeDatabase();
     await Future.delayed(Duration(seconds: 2));
     deviceList = await DataBaseHelper.getAllDevices();
