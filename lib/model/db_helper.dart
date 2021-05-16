@@ -5,13 +5,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataBaseHelper {
-  static Database db;
+  static Database _db;
 
   static initializeDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path + 'ibis.db';
-    await openDatabase(path, version: 1, onCreate: _createDb)
-        .then((value) => db = value);
+    _db = await openDatabase(path, version: 1, onCreate: _createDb);
   }
 
   static _createDb(Database db, int newVersion) async {
@@ -22,12 +21,12 @@ class DataBaseHelper {
   }
 
   //----------------------------------------------------------------------------
-  static addDevice(Device device) =>
-      db.insert("Devices", {"deviceId": device.id, "deviceName": device.name});
+  static addDevice(Device device) async =>
+      await _db.insert("Devices", {"deviceId": device.id, "deviceName": device.name});
 
   static Future<List<Device>> getAllDevices() async {
     List<Device> devices = [];
-    var value = await db.query("Devices");
+    var value = await _db.query("Devices");
     for (var map in value) {
       var schedules = await getSchedulesForDevice(map["deviceId"]);
       devices.add(Device.fromDB(
@@ -36,31 +35,31 @@ class DataBaseHelper {
     return devices;
   }
 
-  static removeDevice(Device device) =>
-      db.delete("Devices", where: "deviceId = ${device.id}");
+  static removeDevice(Device device) async =>
+      await _db.delete("Devices", where: "deviceId = ${device.id}");
 
-  static updateDevice(Device device) =>
-      db.update("Devices", {"deviceName": device.name},
+  static updateDevice(Device device) async =>
+      await _db.update("Devices", {"deviceName": device.name},
           where: "deviceId = ${device.id}");
 
-  //-----------------------------------------------------------------------------
-  static addSchedule(ScheduleData scheduleData, int deviceId) =>
-      db.insert("Schedules", {
+  //----------------------------------------------------------------------------
+  static addSchedule(ScheduleData scheduleData, int deviceId) async =>
+      await _db.insert("Schedules", {
         "deviceId": deviceId,
         "schedule": scheduleData.stringify(),
         "scheduleId": scheduleData.scheduleId
       });
 
-  static removeSchedule(int scheduleId) =>
-      db.delete("Schedules", where: "scheduleId = $scheduleId");
+  static removeSchedule(int scheduleId) async =>
+     await _db.delete("Schedules", where: "scheduleId = $scheduleId");
 
-  static updateSchedule(ScheduleData scheduleData) =>
-      db.update("Schedules", {"schedule": scheduleData.stringify()},
+  static updateSchedule(ScheduleData scheduleData) async =>
+      await _db.update("Schedules", {"schedule": scheduleData.stringify()},
           where: "scheduleId= ${scheduleData.scheduleId}");
 
   static Future<List<ScheduleData>> getSchedulesForDevice(int deviceId) async {
     List<ScheduleData> schedules = [];
-    var value = await db.query("Schedules", where: "deviceId = $deviceId");
+    var value = await _db.query("Schedules", where: "deviceId = $deviceId");
     for (var map in value)
       schedules
           .add(ScheduleData.fromString(map["schedule"], map["scheduleId"]));
