@@ -210,7 +210,7 @@ class _DevicePageState extends State<DevicePage> {
                         setState(() {
                           device.deleteDevice();
                           deviceList.remove(device);
-                          Device.homePageSetState.call();
+                          Device.homePageSetState?.call();
                           Navigator.pop(context);
                         });
                       },
