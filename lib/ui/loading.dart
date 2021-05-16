@@ -45,11 +45,8 @@ class _LoadingState extends State<Loading> {
     await Future.delayed(Duration(seconds: 2));
     deviceList = await DataBaseHelper.getAllDevices();
     final bool result = await platform.invokeMethod('permission');
-    if (result == true) {
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
-      });
-    }
+    if (result)
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
   }
 }
