@@ -13,7 +13,6 @@ BuildContext get context => contextStack.last;
 List<BuildContext> contextStack = [];
 String homeSSID;
 String homePass;
-SharedPreferences prefs;
 ServerSocket serverSocket;
 const String DEVICE_SSID = 'razecov';
 int deviceIdTemp = -1;
