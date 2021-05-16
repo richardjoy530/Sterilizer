@@ -84,6 +84,7 @@ class _DevicePageState extends State<DevicePage> {
                     onTap: () {
                       setState(() {
                         device.uv = !device.uv;
+                        device.isUVDirty=true;
                         device.updateDevice();
                         toggle = device.uv == true ? "toggleOn" : "toggleOff";
                       });

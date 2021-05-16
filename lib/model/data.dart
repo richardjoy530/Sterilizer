@@ -75,35 +75,14 @@ class Device {
   String connectedWifi = "Checking..";
   bool isWifiDirty = false;
 
-  String _name;
+  String name;
   bool isNameDirty = false;
 
-  set name(String name) {
-    isNameDirty = true;
-    this._name = name;
-  }
-
-  String get name => this._name;
-
-  bool _uv = false;
+  bool uv = false;
   bool isUVDirty = false;
 
-  set uv(bool uv) {
-    isUVDirty = true;
-    this._uv = uv;
-  }
-
-  bool get uv => this._uv;
-
-  List<ScheduleData> _schedules = [];
+  List<ScheduleData> schedules = [];
   bool isSchedulesDirty = false;
-
-  set schedules(List<ScheduleData> schedules) {
-    isSchedulesDirty = true;
-    this._schedules = schedules;
-  }
-
-  List<ScheduleData> get schedules => this._schedules;
 
   void Function() devicePageSetState;
   static void Function() homePageSetState;
@@ -115,22 +94,18 @@ class Device {
 
   setDevicePageState(void Function() param0) => devicePageSetState = param0;
 
-  Device.newDevice({String name, this.id, this.connectedWifi}) {
-    this._name = name;
+  Device.newDevice({this.name, this.id, this.connectedWifi}) {
     FirebaseManager.add(this);
     DataBaseHelper.addDevice(this);
     watchForMotion();
   }
 
-  Device.fromDB({String name, this.id, List<ScheduleData> schedules}) {
-    this._name = name;
-    this._schedules = schedules;
+  Device.fromDB({this.name, this.id, this.schedules}) {
     sync();
     watchForMotion();
   }
 
-  Device.fromFire({String name, this.id}) {
-    this._name = name;
+  Device.fromFire({this.name, this.id}) {
     FirebaseManager.getDevice(this).then((device) {
       DataBaseHelper.addDevice(this);
       sync();
@@ -184,6 +159,7 @@ class Device {
       if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
         motionDetectedPopUp(this);
         uv = false;
+        isUVDirty=true;
         updateDevice();
         if (context.widget.runtimeType == DevicePage)
           devicePageSetState?.call();

@@ -151,6 +151,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                           : scheduleData.startTime.minute
                                               .toString();
                                   scheduleData.isDirty = true;
+                                  device.isSchedulesDirty = true;
                                   device.updateDevice();
                                 });
                             });
@@ -201,6 +202,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                           scheduleData.endTime.minute.toString()
                                       : scheduleData.endTime.minute.toString();
                                   scheduleData.isDirty = true;
+                                  device.isSchedulesDirty = true;
                                   device.updateDevice();
                                 });
                             });
@@ -229,6 +231,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[0] = !scheduleData.days[0];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -238,6 +241,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[1] = !scheduleData.days[1];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -247,6 +251,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[2] = !scheduleData.days[2];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -256,6 +261,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[3] = !scheduleData.days[3];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -265,6 +271,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[4] = !scheduleData.days[4];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -274,6 +281,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[5] = !scheduleData.days[5];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
@@ -283,6 +291,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                       setState(() {
                         scheduleData.days[6] = !scheduleData.days[6];
                         scheduleData.isDirty = true;
+                        device.isSchedulesDirty = true;
                         device.updateDevice();
                       });
                     },
