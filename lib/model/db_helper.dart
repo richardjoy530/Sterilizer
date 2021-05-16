@@ -21,8 +21,8 @@ class DataBaseHelper {
   }
 
   //----------------------------------------------------------------------------
-  static addDevice(Device device) async =>
-      await _db.insert("Devices", {"deviceId": device.id, "deviceName": device.name});
+  static addDevice(Device device) async => await _db
+      .insert("Devices", {"deviceId": device.id, "deviceName": device.name});
 
   static Future<List<Device>> getAllDevices() async {
     List<Device> devices = [];
@@ -51,7 +51,7 @@ class DataBaseHelper {
       });
 
   static removeSchedule(int scheduleId) async =>
-     await _db.delete("Schedules", where: "scheduleId = $scheduleId");
+      await _db.delete("Schedules", where: "scheduleId = $scheduleId");
 
   static updateSchedule(ScheduleData scheduleData) async =>
       await _db.update("Schedules", {"schedule": scheduleData.stringify()},

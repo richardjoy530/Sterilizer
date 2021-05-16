@@ -10,7 +10,10 @@ class FirebaseManager {
   static add(Device device) {
     db.child(device.id.toString()).child("motionDetected").set(1);
     db.child(device.id.toString()).child("uv").set("OFF");
-    db.child(device.id.toString()).child("connectedWifi").set(device.connectedWifi);
+    db
+        .child(device.id.toString())
+        .child("connectedWifi")
+        .set(device.connectedWifi);
   }
 
   static updateUV(Device device) async {
@@ -20,8 +23,11 @@ class FirebaseManager {
       db.child(device.id.toString()).child("uv").set("OFF");
   }
 
-  static updateWifi(Device device){
-    db.child(device.id.toString()).child("connectedWifi").set(device.connectedWifi);
+  static updateWifi(Device device) {
+    db
+        .child(device.id.toString())
+        .child("connectedWifi")
+        .set(device.connectedWifi);
   }
 
   static sync(Device device) async {
@@ -37,7 +43,11 @@ class FirebaseManager {
         .then((value) => device.connectedWifi = value.value);
 
     // Checking if motion was detected previously and machine was stopped.
-    await db.child(device.id.toString()).child("motionDetected").once().then((value) {
+    await db
+        .child(device.id.toString())
+        .child("motionDetected")
+        .once()
+        .then((value) {
       if (value.value == 2) motionDetectedPopUp(device);
     });
   }
@@ -104,9 +114,8 @@ class FirebaseManager {
         .child("schedules")
         .once()
         .then((value) {
-          print(value);
-    }
-    );
+      print(value);
+    });
     return device;
   }
 }
