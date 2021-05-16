@@ -1,4 +1,3 @@
-
 import 'package:Sterilizer/model/data.dart';
 import 'package:flutter/material.dart';
 

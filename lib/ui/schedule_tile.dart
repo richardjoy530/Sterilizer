@@ -74,7 +74,7 @@ class _ScheduleTileState extends State<ScheduleTile> {
                                 ? "toggleOn"
                                 : "toggleOff";
                             scheduleData.isDirty = true;
-                            device.isSchedulesDirty=true;
+                            device.isSchedulesDirty = true;
                             device.updateDevice();
                           });
                         },

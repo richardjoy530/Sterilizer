@@ -222,7 +222,10 @@ class _DevicePageState extends State<DevicePage> {
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(device.id.toString(),style: TextStyle(color: Colors.black12),),
+                child: Text(
+                  device.id.toString(),
+                  style: TextStyle(color: Colors.black12),
+                ),
               ),
             )
           ],

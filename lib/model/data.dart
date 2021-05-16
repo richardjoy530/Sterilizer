@@ -74,7 +74,7 @@ enum AddDeviceChoice { ExistingDevice, NewDevice, Invalid }
 class Device {
   int id;
 
-  String connectedWifi="Checking..";
+  String connectedWifi = "Checking..";
   bool isWifiDirty = false;
 
   String _name;
@@ -138,6 +138,8 @@ class Device {
       sync();
       watchForMotion();
     });
+    homePageSetState?.call();
+    devicePageSetState?.call();
   }
 
   sync() async {

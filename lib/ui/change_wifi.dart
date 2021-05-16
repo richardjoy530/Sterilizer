@@ -130,7 +130,7 @@ class _ChangeWifiState extends State<ChangeWifi> {
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () async {
-                      if(passwordController.text!=""){
+                      if (passwordController.text != "") {
                         homePass = passwordController.text;
                         homeSSID = tempSSID;
                         RegistrationProcess.currentStatus = 0;
@@ -251,8 +251,8 @@ class _ChangeWifiState extends State<ChangeWifi> {
     if (contextStack.last.widget.runtimeType == BottomSheet)
       await changeRegistrationStatus(
           RegistrationProcess.OVER, setBottomSheetState);
-    device.connectedWifi=homeSSID;
-    device.isWifiDirty=true;
+    device.connectedWifi = homeSSID;
+    device.isWifiDirty = true;
     device.updateDevice();
     if (contextStack.last.widget.runtimeType == BottomSheet)
       await Future.delayed(Duration(milliseconds: 1000));
