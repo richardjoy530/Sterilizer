@@ -69,10 +69,12 @@ class RegistrationProcess {
   }
 }
 
+enum AddDeviceChoice { ExistingDevice, NewDevice, Invalid }
+
 class Device {
   int id;
 
-  String connectedWifi;
+  String connectedWifi="Checking..";
   bool isWifiDirty = false;
 
   String _name;
@@ -136,7 +138,6 @@ class Device {
       sync();
       watchForMotion();
     });
-
   }
 
   sync() async {
@@ -184,7 +185,8 @@ class Device {
         motionDetectedPopUp(this);
         uv = false;
         updateDevice();
-        if (context.widget.runtimeType == DevicePage) devicePageSetState?.call();
+        if (context.widget.runtimeType == DevicePage)
+          devicePageSetState?.call();
       }
     });
   }
