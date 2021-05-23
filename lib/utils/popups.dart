@@ -186,6 +186,7 @@ renameDevicePopUp(Device device) async {
 }
 
 addDevicePopup() async {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController passwordController =
       TextEditingController(text: homePass);
   TextEditingController idController = TextEditingController();
@@ -225,85 +226,104 @@ addDevicePopup() async {
               )
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: TextField(
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                labelText: "Wifi Password",
-                focusColor: Colors.black,
-                labelStyle: TextStyle(color: Colors.black),
-                border: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
+          Form(
+            key: formKey,
+              child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value.isEmpty) return "Password Required";
+                    return null;
+                  },
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    labelText: "Wifi Password",
+                    focusColor: Colors.black,
+                    labelStyle: TextStyle(color: Colors.black),
+                    border: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
                   ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-              ),
-              controller: passwordController,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: TextField(
-              cursorColor: Colors.black,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Enter your Device ID",
-                focusColor: Colors.black,
-                labelStyle: TextStyle(color: Colors.black),
-                border: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
+                  controller: passwordController,
                 ),
               ),
-              controller: idController,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: TextField(
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                labelText: "Name your Device",
-                focusColor: Colors.black,
-                labelStyle: TextStyle(color: Colors.black),
-                border: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value.isEmpty) return "ID Required";
+                    return null;
+                  },
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    labelText: "Enter your Device ID",
+                    focusColor: Colors.black,
+                    labelStyle: TextStyle(color: Colors.black),
+                    border: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
                   ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
+                  controller: idController,
                 ),
               ),
-              controller: nameController,
-            ),
-          ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value.isEmpty) return "Name Required";
+                    return null;
+                  },
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    labelText: "Name your Device",
+                    focusColor: Colors.black,
+                    labelStyle: TextStyle(color: Colors.black),
+                    border: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                  controller: nameController,
+                ),
+              ),
+            ],
+          )),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
@@ -317,12 +337,14 @@ addDevicePopup() async {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    homePass = passwordController.text;
-                    deviceIdTemp = int.parse(idController.text);
-                    deviceNameTemp = nameController.text;
-                    idController.text = "";
-                    nameController.text = "";
-                    Navigator.pop(context);
+                    if (formKey.currentState.validate()) {
+                      homePass = passwordController.text;
+                      deviceIdTemp = int.parse(idController.text);
+                      deviceNameTemp = nameController.text;
+                      idController.text = "";
+                      nameController.text = "";
+                      Navigator.pop(context);
+                    }
                   }),
             ),
           )
@@ -335,6 +357,7 @@ addDevicePopup() async {
 addExistingDevicePopUp() async {
   TextEditingController idController = TextEditingController();
   TextEditingController nameController = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   homeSSID = await Wifi.ssid;
   await showDialog(
     barrierDismissible: false,
@@ -350,59 +373,74 @@ addExistingDevicePopUp() async {
           textAlign: TextAlign.center,
         ),
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: TextField(
-              cursorColor: Colors.black,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Enter your Device ID",
-                focusColor: Colors.black,
-                labelStyle: TextStyle(color: Colors.black),
-                border: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
+          Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty) return "ID Required";
+                        return null;
+                      },
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        labelText: "Enter your Device ID",
+                        focusColor: Colors.black,
+                        labelStyle: TextStyle(color: Colors.black),
+                        border: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                      ),
+                      controller: idController,
+                    ),
                   ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty) return "Name Required";
+                        return null;
+                      },
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        labelText: "Name your Device",
+                        focusColor: Colors.black,
+                        labelStyle: TextStyle(color: Colors.black),
+                        border: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                      ),
+                      controller: nameController,
+                    ),
                   ),
-                ),
-              ),
-              controller: idController,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: TextField(
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                labelText: "Name your Device",
-                focusColor: Colors.black,
-                labelStyle: TextStyle(color: Colors.black),
-                border: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-              ),
-              controller: nameController,
-            ),
-          ),
+                ],
+              )),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
@@ -416,16 +454,18 @@ addExistingDevicePopUp() async {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    deviceIdTemp = int.parse(idController.text);
-                    deviceNameTemp = nameController.text;
-                    idController.text = "";
-                    nameController.text = "";
-                    var device =
-                        Device.fromFire(name: deviceNameTemp, id: deviceIdTemp);
-                    deviceList.add(device);
-                    deviceIdTemp = -1;
-                    deviceNameTemp = "";
-                    Navigator.pop(context);
+                    if (formKey.currentState.validate()) {
+                      deviceIdTemp = int.parse(idController.text);
+                      deviceNameTemp = nameController.text;
+                      idController.text = "";
+                      nameController.text = "";
+                      var device = Device.fromFire(
+                          name: deviceNameTemp, id: deviceIdTemp);
+                      deviceList.add(device);
+                      deviceIdTemp = -1;
+                      deviceNameTemp = "";
+                      Navigator.pop(context);
+                    }
                   }),
             ),
           )

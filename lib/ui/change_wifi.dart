@@ -20,6 +20,7 @@ class _ChangeWifiState extends State<ChangeWifi> {
   TextEditingController passwordController;
   String tempSSID;
   Timer _timer;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   void Function(void Function()) setBottomSheetState;
 
@@ -82,30 +83,37 @@ class _ChangeWifiState extends State<ChangeWifi> {
                     )
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: TextField(
-                    cursorColor: Colors.black,
-                    decoration: InputDecoration(
-                      labelText: "Enter Wifi Password",
-                      focusColor: Colors.black,
-                      labelStyle: TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
+                Form(
+                  key: formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty) return "Password Required";
+                        return null;
+                      },
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        labelText: "Enter Wifi Password",
+                        focusColor: Colors.black,
+                        labelStyle: TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                          ),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
+                      controller: passwordController,
                     ),
-                    controller: passwordController,
                   ),
                 ),
               ],
@@ -123,7 +131,7 @@ class _ChangeWifiState extends State<ChangeWifi> {
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () async {
-                      if (passwordController.text != "") {
+                      if (formKey.currentState.validate()) {
                         homePass = passwordController.text;
                         homeSSID = tempSSID;
                         RegistrationProcess.currentStatus = 0;
