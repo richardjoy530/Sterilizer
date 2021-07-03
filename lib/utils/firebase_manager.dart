@@ -8,43 +8,43 @@ class FirebaseManager {
   static DatabaseReference db = FirebaseDatabase.instance.reference();
 
   static add(Device device) {
-    db.child(device.id.toString()).child("motionDetected").set(1);
-    db.child(device.id.toString()).child("uv").set("OFF");
+    db.child(device.id).child("motionDetected").set(1);
+    db.child(device.id).child("uv").set("OFF");
     db
-        .child(device.id.toString())
+        .child(device.id)
         .child("connectedWifi")
         .set(device.connectedWifi);
   }
 
   static updateUV(Device device) async {
     if (device.uv)
-      db.child(device.id.toString()).child("uv").set("ON");
+      db.child(device.id).child("uv").set("ON");
     else
-      db.child(device.id.toString()).child("uv").set("OFF");
+      db.child(device.id).child("uv").set("OFF");
   }
 
   static updateWifi(Device device) {
     db
-        .child(device.id.toString())
+        .child(device.id)
         .child("connectedWifi")
         .set(device.connectedWifi);
   }
 
   static sync(Device device) async {
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("connectedWifi")
         .once()
         .then((value) => device.connectedWifi = value.value);
 
     // Checking if motion was detected previously and machine was stopped.
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("motionDetected")
         .once()
         .then((value) {
@@ -65,16 +65,16 @@ class FirebaseManager {
           "dayStamp": encodeScheduleDays(element),
         });
     });
-    db.child(device.id.toString()).child("schedules").set(mapList);
+    db.child(device.id).child("schedules").set(mapList);
     db
-        .child(device.id.toString())
+        .child(device.id)
         .child("schedules")
         .child('active')
         .set(mapList.length);
   }
 
   static void motionReset(Device device) {
-    db.child(device.id.toString()).child("motionDetected").set(1);
+    db.child(device.id).child("motionDetected").set(1);
   }
 
   static String encodeScheduleDays(ScheduleData scheduleData) {
@@ -97,20 +97,29 @@ class FirebaseManager {
     return encodedValue;
   }
 
+  static Future<bool> checkForExistingDevice(String deviceId) async {
+    var result = await db
+        .child(deviceId)
+        .once();
+    if (result.value != null)
+      return true;
+    return false;
+  }
+
   static Future<Device> getDevice(Device device) async {
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("uv")
         .once()
         .then((value) => device.uv = value.value == "OFF" ? false : true);
 
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("connectedWifi")
         .once()
         .then((value) => device.connectedWifi = value.value);
     await db
-        .child(device.id.toString())
+        .child(device.id)
         .child("schedules")
         .once()
         .then((value) {

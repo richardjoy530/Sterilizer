@@ -51,14 +51,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   onAddDevicePressed() async {
-    deviceIdTemp = -1;
+    deviceIdTemp = "-1";
     RegistrationProcess.currentStatus = 0;
     RegistrationProcess.currentStatusString = RegistrationProcess.PREPARING;
     var choice = await choseAddOptionPopUp();
     if (choice == AddDeviceChoice.ExistingDevice)
       await addExistingDevicePopUp();
     else if (choice == AddDeviceChoice.NewDevice) await addDevicePopup();
-    if (deviceIdTemp != -1 && deviceNameTemp != "") await showBottomSheet();
+    if (deviceIdTemp != "-1" && deviceNameTemp != "") await showBottomSheet();
   }
 
   showBottomSheet() async {

@@ -15,9 +15,9 @@ class DataBaseHelper {
 
   static _createDb(Database db, int newVersion) async {
     await db.execute(
-        'CREATE TABLE Devices (deviceId INTEGER PRIMARY KEY, deviceName TEXT, settings TEXT)');
+        'CREATE TABLE Devices (id INTEGER PRIMARY KEY AUTOINCREMENT, deviceId TEXT, deviceName TEXT, settings TEXT)');
     await db.execute(
-        'CREATE TABLE Schedules (id INTEGER PRIMARY KEY AUTOINCREMENT, scheduleId INTEGER , deviceId INTEGER, schedule TEXT, settings TEXT)');
+        'CREATE TABLE Schedules (id INTEGER PRIMARY KEY AUTOINCREMENT, scheduleId INTEGER , deviceId TEXT, schedule TEXT, settings TEXT)');
   }
 
   //----------------------------------------------------------------------------
@@ -36,14 +36,14 @@ class DataBaseHelper {
   }
 
   static removeDevice(Device device) async =>
-      await _db.delete("Devices", where: "deviceId = ${device.id}");
+      await _db.delete("Devices", where: "deviceId = \"${device.id}\"");
 
   static updateDevice(Device device) async =>
       await _db.update("Devices", {"deviceName": device.name},
-          where: "deviceId = ${device.id}");
+          where: "deviceId = \"${device.id}\"");
 
   //----------------------------------------------------------------------------
-  static addSchedule(ScheduleData scheduleData, int deviceId) async =>
+  static addSchedule(ScheduleData scheduleData, String deviceId) async =>
       await _db.insert("Schedules", {
         "deviceId": deviceId,
         "schedule": scheduleData.stringify(),
@@ -55,11 +55,11 @@ class DataBaseHelper {
 
   static updateSchedule(ScheduleData scheduleData) async =>
       await _db.update("Schedules", {"schedule": scheduleData.stringify()},
-          where: "scheduleId= ${scheduleData.scheduleId}");
+          where: "scheduleId = ${scheduleData.scheduleId}");
 
-  static Future<List<ScheduleData>> getSchedulesForDevice(int deviceId) async {
+  static Future<List<ScheduleData>> getSchedulesForDevice(String deviceId) async {
     List<ScheduleData> schedules = [];
-    var value = await _db.query("Schedules", where: "deviceId = $deviceId");
+    var value = await _db.query("Schedules", where: "deviceId = \"$deviceId\"");
     for (var map in value)
       schedules
           .add(ScheduleData.fromString(map["schedule"], map["scheduleId"]));

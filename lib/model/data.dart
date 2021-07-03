@@ -15,7 +15,7 @@ String homeSSID;
 String homePass;
 ServerSocket serverSocket;
 const String DEVICE_SSID = 'razecov';
-int deviceIdTemp = -1;
+String deviceIdTemp = "-1";
 String deviceNameTemp = "";
 const String DEVICE_PASSWORD = 'razecov123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
@@ -70,7 +70,7 @@ class RegistrationProcess {
 enum AddDeviceChoice { ExistingDevice, NewDevice, Invalid }
 
 class Device {
-  int id;
+  String id;
 
   String connectedWifi = "Checking..";
   bool isWifiDirty = false;
@@ -218,7 +218,7 @@ class ScheduleData {
       TimeOfDay endTime,
       bool state,
       List<bool> days,
-      int deviceId}) {
+      String deviceId}) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.state = state;

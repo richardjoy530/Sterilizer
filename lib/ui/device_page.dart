@@ -66,7 +66,7 @@ class _DevicePageState extends State<DevicePage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(device.connectedWifi),
+                    child: Text(device.connectedWifi?.toString()),
                   )
                 ],
               ),
