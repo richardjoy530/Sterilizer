@@ -1,5 +1,6 @@
 import 'package:Sterilizer/model/db_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/data.dart';
@@ -42,10 +43,19 @@ class _LoadingState extends State<Loading> {
   load() async {
     DataBaseHelper.initializeDatabase();
     await Future.delayed(Duration(seconds: 2));
-    deviceList = await DataBaseHelper.getAllDevices();
+    try {
+      deviceList = await DataBaseHelper
+          .getAllDevices();
+    }
+    catch (e){
+      Fluttertoast.showToast(msg: "DataBase Error: ${e.toString()}");
+    }
+    Fluttertoast.showToast(msg: "Couldn't check for permission");
     final bool result = await platform.invokeMethod('permission');
     if (result)
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
+    else
+      Fluttertoast.showToast(msg: "Couldn't check for permission");
   }
 }
