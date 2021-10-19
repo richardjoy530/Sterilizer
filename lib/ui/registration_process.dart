@@ -177,14 +177,14 @@ class _RegistrationProcessWidgetsState
     };
 
     await changeRegistrationStatus(RegistrationProcess.SEARCHING);
-    await platform.invokeMethod("register", cred);
+    // await plat/form.invokeMethod("register", cred);
 
     await changeRegistrationStatus(RegistrationProcess.ESTABLISHING);
-    String ssid = await Wifi.ssid;
-    while (ssid != DEVICE_SSID) ssid = await Wifi.ssid;
+    // String ssid = await Wifi.ssid;
+    // while (ssid != DEVICE_SSID) ssid = await Wifi.ssid;
 
     await changeRegistrationStatus(RegistrationProcess.REGISTERING);
-    await connectToTCPServer();
+    // await connectToTCPServer();
     await Future.delayed(Duration(seconds: 3));
 
     await changeRegistrationStatus(RegistrationProcess.WAITING);

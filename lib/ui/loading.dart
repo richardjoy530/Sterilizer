@@ -50,7 +50,7 @@ class _LoadingState extends State<Loading> {
     catch (e){
       Fluttertoast.showToast(msg: "DataBase Error: ${e.toString()}");
     }
-    Fluttertoast.showToast(msg: "Couldn't check for permission");
+    // Fluttertoast.showToast(msg: "Couldn't check for permission");
     final bool result = await platform.invokeMethod('permission');
     if (result)
       Navigator.pushReplacement(

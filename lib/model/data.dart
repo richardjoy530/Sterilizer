@@ -72,6 +72,14 @@ enum AddDeviceChoice { ExistingDevice, NewDevice, Invalid }
 class Device {
   String id;
 
+// 3 health metrics
+// 1 => HEPA filter = MAX = 
+// 2 => Purification
+// 3 => Disinfection 
+
+  int uvHealth; // 
+  int hepaHealth;
+
   String connectedWifi = "Checking..";
   bool isWifiDirty = false;
 
@@ -156,7 +164,7 @@ class Device {
 
   watchForMotion() {
     FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
-      if (event.snapshot.key == "motionDetected" && event.snapshot.value == 2) {
+      if (event.snapshot.key == "uv" && event.snapshot.value == "OFF1") {
         motionDetectedPopUp(this);
         uv = false;
         isUVDirty=true;
