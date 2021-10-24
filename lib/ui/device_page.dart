@@ -84,7 +84,7 @@ class _DevicePageState extends State<DevicePage> {
                     onTap: () {
                       setState(() {
                         device.uv = !device.uv;
-                        device.isUVDirty=true;
+                        device.isUVDirty = true;
                         device.updateDevice();
                         toggle = device.uv == true ? "toggleOn" : "toggleOff";
                       });
@@ -114,6 +114,16 @@ class _DevicePageState extends State<DevicePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChangeWifi(device)));
+                      });
+                    }),
+                genericTile(
+                    text: 'Health Checkup',
+                    subTitle: "Tap to view the health status",
+                    leadingIcon: Icons.health_and_safety_rounded,
+                    trailing: Icon(Icons.touch_app_rounded),
+                    onTap: () {
+                      setState(() {
+                        healthPopup(device);
                       });
                     }),
                 genericTile(

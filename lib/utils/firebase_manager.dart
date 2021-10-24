@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'package:intl/intl.dart';
+
 import 'package:Sterilizer/model/data.dart';
 import 'package:Sterilizer/utils/popups.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -45,6 +48,11 @@ class FirebaseManager {
         .child("connectedWifi")
         .once()
         .then((value) => device.connectedWifi = value.value);
+
+    await db.child(device.id).child("lifespan").once().then((value) {
+      device.value1 = int.parse(value.value.toString().substring(0, 6));
+      device.value2 = int.parse(value.value.toString().substring(7));
+    });
 
     // Checking if motion was detected previously and machine was stopped.
     await db.child(device.id).child("uv").once().then((value) {
@@ -109,9 +117,15 @@ class FirebaseManager {
     });
 
     rawMap.forEach((key, value) {
-      value.sort((a, b)=> a[0].hour.compareTo(b[0].hour));
-      schedulesMap[key] = [value.toString()];
-     });
+      value.sort((a, b) => a[0].hour.compareTo(b[0].hour));
+      String timeList = "";
+      if (value.length != 0) {
+        value.forEach((element) {
+          timeList += getTimeString(element[0], element[1]);
+        });
+      }
+      schedulesMap[key] = [timeList];
+    });
 
     print(rawMap);
     db.child(device.id).child("schedules").set(schedulesMap);
@@ -119,6 +133,10 @@ class FirebaseManager {
 
   static void motionReset(Device device) {
     db.child(device.id).child("uv").set("OFF");
+  }
+
+  static String getTimeString(TimeOfDay a, TimeOfDay b) {
+    return "(${a.hour}:${a.minute}-${b.hour}:${b.minute})";
   }
 
   static String encodeScheduleDays(ScheduleData scheduleData) {
@@ -150,7 +168,10 @@ class FirebaseManager {
   static Future<Device> getDevice(Device device) async {
     await db.child(device.id).child("uv").once().then((value) => device.uv =
         value.value == "OFF" || value.value == "OFF1" ? false : true);
-
+    await db.child(device.id).child("lifespan").once().then((value) {
+      device.value1 = int.parse(value.value.toString().substring(0, 6));
+      device.value2 = int.parse(value.value.toString().substring(7));
+    });
     await db
         .child(device.id)
         .child("connectedWifi")
@@ -160,5 +181,16 @@ class FirebaseManager {
       print(value);
     });
     return device;
+  }
+
+  static void healthReset(Device device, int option) {
+    NumberFormat formatter = new NumberFormat("000000");
+    if (option == 2) {
+      device.value1 = 0;
+    } else if (option == 3) {
+      device.value2 = 0;
+    }
+    db.child(device.id).child("lifespan").set(
+        "${formatter.format(device.value1)},${formatter.format(device.value2)}");
   }
 }

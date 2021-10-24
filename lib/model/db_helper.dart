@@ -30,9 +30,14 @@ class DataBaseHelper {
     for (var map in value) {
       var schedules = await getSchedulesForDevice(map["deviceId"]);
       devices.add(Device.fromDB(
-          id: map['deviceId'], name: map["deviceName"], schedules: schedules));
+          id: map['deviceId'], name: map["deviceName"], schedules: schedules, settings: map["settings"]));
     }
     return devices;
+  }
+
+  static changedHEPAfilter(Device device, String data) async {
+    await _db.update("Devices", {"deviceName": device.name},
+        where: "settings = \"$data\"");
   }
 
   static removeDevice(Device device) async =>
@@ -57,7 +62,8 @@ class DataBaseHelper {
       await _db.update("Schedules", {"schedule": scheduleData.stringify()},
           where: "scheduleId = ${scheduleData.scheduleId}");
 
-  static Future<List<ScheduleData>> getSchedulesForDevice(String deviceId) async {
+  static Future<List<ScheduleData>> getSchedulesForDevice(
+      String deviceId) async {
     List<ScheduleData> schedules = [];
     var value = await _db.query("Schedules", where: "deviceId = \"$deviceId\"");
     for (var map in value)

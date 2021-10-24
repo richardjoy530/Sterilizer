@@ -2,6 +2,7 @@ import 'package:Sterilizer/model/data.dart';
 import 'package:Sterilizer/utils/firebase_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:wifi/wifi.dart';
 
 motionDetectedPopUp(Device device) async {
@@ -549,4 +550,161 @@ Future<AddDeviceChoice> choseAddOptionPopUp() async {
         );
       });
   return choice;
+}
+
+healthPopup(Device device) async {
+  print([device.value1, device.value2, device.hepaHealth, device.purficationHealth, device.disinfectionHealth]);
+  await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          backgroundColor: Color(0xffe8e8e8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.info_outline_rounded),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Device Health',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          children: [
+            ListTile(
+              title: Text(
+                "Hepa Filter",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: LinearPercentIndicator(
+                backgroundColor: Color(0xffd6e7ee),
+                lineHeight: 5.0,
+                percent:
+                    (device.hepaHealth / 100) <= 0 ? 0 : device.hepaHealth / 100,
+                progressColor: Color(0xff00477d),
+              ),
+              trailing: Text(
+                "${device.hepaHealth <= 0 ? 0 : device.hepaHealth}%",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "Purification UVC Tube",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: LinearPercentIndicator(
+                backgroundColor: Color(0xffd6e7ee),
+                lineHeight: 5.0,
+                percent: (device.purficationHealth / 100) <= 0
+                    ? 0
+                    : device.purficationHealth / 100,
+                progressColor: Color(0xff00477d),
+              ),
+              trailing: Text(
+                "${device.purficationHealth <= 0 ? 0 : device.purficationHealth}%",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "Disinfection UVC Tube",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: LinearPercentIndicator(
+                backgroundColor: Color(0xffd6e7ee),
+                lineHeight: 5.0,
+                percent: (device.disinfectionHealth / 100) <= 0
+                    ? 0
+                    : device.disinfectionHealth / 100,
+                progressColor: Color(0xff00477d),
+              ),
+              trailing: Text(
+                "${device.disinfectionHealth <= 0 ? 0 : device.disinfectionHealth}%",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            )
+          ],
+        );
+      });
+}
+
+unhealthyPopup(Device device, String msg, String ok, int option) async {
+  await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          backgroundColor: Color(0xffe8e8e8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.warning_amber_rounded),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Warning",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                  child: Text(
+                msg,
+                textAlign: TextAlign.center,
+              )),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      color: Color(0xff060606),
+                      child: Text(
+                        "Dismiss",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                  RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      color: Colors.white,
+                      child: Text(
+                        ok,
+                        style: TextStyle(color: Color(0xff060606)),
+                      ),
+                      onPressed: () {
+                        device.resetHealth(option);
+                        Navigator.pop(context);
+                      }),
+                ],
+              ),
+            )
+          ],
+        );
+      });
 }

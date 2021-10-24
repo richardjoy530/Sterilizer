@@ -73,17 +73,23 @@ class Device {
   String id;
 
 // 3 health metrics
-// 1 => HEPA filter = MAX = 
+// 1 => HEPA filter = MAX =
 // 2 => Purification
-// 3 => Disinfection 
+// 3 => Disinfection
 
-  int uvHealth; // 
-  int hepaHealth;
+  int value1 = 000000;
+  int value2 = 000000;
+
+  String settings = '';
+
+  int get hepaHealth => 100 - (value1.remainder(270000) ~/ 2700);
+  int get purficationHealth => 100 - (value1 ~/ 5400);
+  int get disinfectionHealth => 100 - (value2 ~/ 5400);
 
   String connectedWifi = "Checking..";
   bool isWifiDirty = false;
 
-  String name='Device';
+  String name = 'Device';
   bool isNameDirty = false;
 
   bool uv = false;
@@ -105,19 +111,19 @@ class Device {
   Device.newDevice({this.name, this.id, this.connectedWifi}) {
     FirebaseManager.add(this);
     DataBaseHelper.addDevice(this);
-    watchForMotion();
+    watch();
   }
 
-  Device.fromDB({this.name, this.id, this.schedules}) {
+  Device.fromDB({this.name, this.id, this.schedules, this.settings}) {
     sync();
-    watchForMotion();
+    watch();
   }
 
   Device.fromFire({this.name, this.id}) {
     FirebaseManager.getDevice(this).then((device) {
       DataBaseHelper.addDevice(this);
       sync();
-      watchForMotion();
+      watch();
     });
     homePageSetState?.call();
     devicePageSetState?.call();
@@ -125,6 +131,24 @@ class Device {
 
   sync() async {
     await FirebaseManager.sync(this);
+    if (disinfectionHealth <= 0) {
+      unhealthyPopup(
+          this,
+          "Disinfection UVC Tube is expired please change the tube.",
+          "Change Tube",
+          3);
+    }
+    if (purficationHealth <= 0) {
+      unhealthyPopup(
+          this,
+          "Purification UVC Tube is expired please change the tube.",
+          "Change Tube",
+          2);
+    }
+    if (purficationHealth <= 50 && settings != "reset") {
+      unhealthyPopup(this, "Hepa filter is expired please change the tube.",
+          "Change Filter", 1);
+    }
     homePageSetState?.call();
     devicePageSetState?.call();
   }
@@ -162,21 +186,55 @@ class Device {
     });
   }
 
-  watchForMotion() {
+  watch() {
     FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
+      // Motion
       if (event.snapshot.key == "uv" && event.snapshot.value == "OFF1") {
         motionDetectedPopUp(this);
         uv = false;
-        isUVDirty=true;
+        isUVDirty = true;
         updateDevice();
         if (context.widget.runtimeType == DevicePage)
           devicePageSetState?.call();
+      } else if (event.snapshot.key == "lifespan") {
+        this.value1 =
+            int.parse(event.snapshot.value.toString().substring(0, 6));
+        this.value2 = int.parse(event.snapshot.value.toString().substring(7));
+        if (disinfectionHealth <= 0) {
+          unhealthyPopup(
+              this,
+              "Disinfection UVC Tube is expired please change the tube.",
+              "Change Tube",
+              3);
+        }
+        if (purficationHealth <= 0) {
+          unhealthyPopup(
+              this,
+              "Purification UVC Tube is expired please change the tube.",
+              "Change Tube",
+              2);
+        }
+        if (hepaHealth <= 0 && settings != "reset") {
+          unhealthyPopup(this, "Hepa filter is expired please change the tube.",
+              "Change Filter", 1);
+        }
       }
     });
   }
 
   resetMotion() {
     FirebaseManager.motionReset(this);
+  }
+
+  resetHealth(int option) {
+    if (option == 1) {
+      settings = "reset";
+      DataBaseHelper.changedHEPAfilter(this, "reset");
+    } else if (option == 2) {
+      settings = "fresh";
+      DataBaseHelper.changedHEPAfilter(this, "fresh");
+    }
+    FirebaseManager.healthReset(this, option);
   }
 }
 
