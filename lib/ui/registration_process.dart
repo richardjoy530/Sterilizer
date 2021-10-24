@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Sterilizer/model/data.dart';
 import 'package:flutter/material.dart';
 import 'package:wifi/wifi.dart';
+import 'package:app_settings/app_settings.dart';
 
 class RegistrationProcessWidgets extends StatefulWidget {
   final bool newDevice;
@@ -178,13 +179,18 @@ class _RegistrationProcessWidgetsState
 
     await changeRegistrationStatus(RegistrationProcess.SEARCHING);
     // await plat/form.invokeMethod("register", cred);
+    print("to settings");
+
+    await AppSettings.openWIFISettings();
+
+    print("back from settings");
 
     await changeRegistrationStatus(RegistrationProcess.ESTABLISHING);
-    // String ssid = await Wifi.ssid;
-    // while (ssid != DEVICE_SSID) ssid = await Wifi.ssid;
+    String ssid = await Wifi.ssid;
+    while (ssid != DEVICE_SSID) ssid = await Wifi.ssid;
 
     await changeRegistrationStatus(RegistrationProcess.REGISTERING);
-    // await connectToTCPServer();
+    await connectToTCPServer();
     await Future.delayed(Duration(seconds: 3));
 
     await changeRegistrationStatus(RegistrationProcess.WAITING);

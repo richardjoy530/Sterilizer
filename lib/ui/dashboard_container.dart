@@ -15,14 +15,13 @@ class _GeneralState extends State<General> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 30, bottom: 30),
+          margin: 
+                    EdgeInsets.only(top: 30, bottom: 30, left: 50, right: 50),
           child: ListTile(
-            title: Text(
-              homeName,
-              textAlign: TextAlign.start,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-          ),
+              title: Image.asset(
+            'assets/logo.png',
+            // color: Color(0xff00477d),
+          )),
         ),
         Expanded(
           child: Padding(
