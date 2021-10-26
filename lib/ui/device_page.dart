@@ -74,8 +74,8 @@ class _DevicePageState extends State<DevicePage> {
             Column(
               children: [
                 genericTile(
-                    text: 'Enable UV',
-                    subTitle: "Tap to enable disinfection with UV",
+                    text: 'Enable surface disinfection',
+                    subTitle: "Tap to enable disinfection with UV tubes",
                     leadingIcon: Icons.wb_twighlight,
                     trailing: FlareActor("assets/Toggle.flr",
                         alignment: Alignment.center,
@@ -92,7 +92,7 @@ class _DevicePageState extends State<DevicePage> {
                 genericTile(
                     text: 'Set schedules',
                     subTitle:
-                        "Automate your steriliser by setting multiple schedules",
+                        "Automate your purifier by setting multiple schedules",
                     leadingIcon: Icons.schedule_rounded,
                     trailing: Icon(Icons.arrow_forward_ios_rounded),
                     onTap: () {
@@ -117,8 +117,8 @@ class _DevicePageState extends State<DevicePage> {
                       });
                     }),
                 genericTile(
-                    text: 'Health Checkup',
-                    subTitle: "Tap to view the health status",
+                    text: 'Lifespan Info',
+                    subTitle: "Tap to view hepa filter and UVC tubes",
                     leadingIcon: Icons.health_and_safety_rounded,
                     trailing: Icon(Icons.touch_app_rounded),
                     onTap: () {

@@ -36,7 +36,7 @@ class _SchedulePageState extends State<SchedulePage> {
               margin: EdgeInsets.only(top: 30, bottom: 30),
               child: ListTile(
                 title: Text(
-                  "Schedule",
+                  "Schedules",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),

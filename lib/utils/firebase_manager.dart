@@ -136,7 +136,8 @@ class FirebaseManager {
   }
 
   static String getTimeString(TimeOfDay a, TimeOfDay b) {
-    return "(${a.hour}:${a.minute}-${b.hour}:${b.minute})";
+    NumberFormat formatter = new NumberFormat("00");
+    return "(${formatter.format(a.hour)}${formatter.format(a.minute)}${formatter.format(b.hour)}${formatter.format(b.minute)})";
   }
 
   static String encodeScheduleDays(ScheduleData scheduleData) {

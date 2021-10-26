@@ -14,10 +14,10 @@ List<BuildContext> contextStack = [];
 String homeSSID;
 String homePass;
 ServerSocket serverSocket;
-const String DEVICE_SSID = 'razecov';
+const String DEVICE_SSID = 'BubbleO W';
 String deviceIdTemp = "-1";
 String deviceNameTemp = "";
-const String DEVICE_PASSWORD = 'razecov123';
+const String DEVICE_PASSWORD = 'bubbleo123';
 const platform = const MethodChannel('com.ibis.sterilizer/channel');
 String homeName = 'Dashboard';
 List<Device> deviceList = [];
@@ -186,6 +186,9 @@ class Device {
     });
   }
 
+  var warning1 = false;
+  var warning2 = false;
+  var warning3 = false;
   watch() {
     FirebaseManager.db.child(id.toString()).onChildChanged.listen((event) {
       // Motion
@@ -193,33 +196,40 @@ class Device {
         motionDetectedPopUp(this);
         uv = false;
         isUVDirty = true;
-        updateDevice();
+        // updateDevice();
         if (context.widget.runtimeType == DevicePage)
           devicePageSetState?.call();
       } else if (event.snapshot.key == "lifespan") {
         this.value1 =
             int.parse(event.snapshot.value.toString().substring(0, 6));
         this.value2 = int.parse(event.snapshot.value.toString().substring(7));
-        if (disinfectionHealth <= 0) {
-          unhealthyPopup(
-              this,
-              "Disinfection UVC Tube is expired please change the tube.",
-              "Change Tube",
-              3);
-        }
-        if (purficationHealth <= 0) {
-          unhealthyPopup(
-              this,
-              "Purification UVC Tube is expired please change the tube.",
-              "Change Tube",
-              2);
-        }
-        if (hepaHealth <= 0 && settings != "reset") {
-          unhealthyPopup(this, "Hepa filter is expired please change the tube.",
-              "Change Filter", 1);
-        }
+        healthChecks();
       }
     });
+  }
+
+  healthChecks() {
+    if (disinfectionHealth <= 0 && !warning1) {
+      warning1 = true;
+      unhealthyPopup(
+          this,
+          "Disinfection UVC Tube is expired please change the tube.",
+          "Change Tube",
+          3);
+    }
+    if (purficationHealth <= 0 && !warning2) {
+      warning2 = true;
+      unhealthyPopup(
+          this,
+          "Purification UVC Tube is expired please change the tube.",
+          "Change Tube",
+          2);
+    }
+    if (hepaHealth <= 0 && settings != "reset" && !warning3) {
+      warning3 = true;
+      unhealthyPopup(this, "Hepa filter is expired please change the tube.",
+          "Change Filter", 1);
+    }
   }
 
   resetMotion() {

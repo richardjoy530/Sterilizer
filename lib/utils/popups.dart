@@ -553,7 +553,13 @@ Future<AddDeviceChoice> choseAddOptionPopUp() async {
 }
 
 healthPopup(Device device) async {
-  print([device.value1, device.value2, device.hepaHealth, device.purficationHealth, device.disinfectionHealth]);
+  print([
+    device.value1,
+    device.value2,
+    device.hepaHealth,
+    device.purficationHealth,
+    device.disinfectionHealth
+  ]);
   await showDialog(
       context: context,
       builder: (context) {
@@ -562,21 +568,24 @@ healthPopup(Device device) async {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.info_outline_rounded),
+          title: ListTile(
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Lifespan',
+                textAlign: TextAlign.center,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Device Health',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
+            ),
+            leading: Icon(Icons.info_outline_rounded),
+            trailing: IconButton(
+                icon: Icon(Icons.refresh_rounded),
+                onPressed: () {
+                  device
+                    ..warning1 = false
+                    ..warning2 = false
+                    ..warning3 = false
+                    ..healthChecks();
+                }),
           ),
           children: [
             ListTile(
@@ -587,8 +596,9 @@ healthPopup(Device device) async {
               subtitle: LinearPercentIndicator(
                 backgroundColor: Color(0xffd6e7ee),
                 lineHeight: 5.0,
-                percent:
-                    (device.hepaHealth / 100) <= 0 ? 0 : device.hepaHealth / 100,
+                percent: (device.hepaHealth / 100) <= 0
+                    ? 0
+                    : device.hepaHealth / 100,
                 progressColor: Color(0xff00477d),
               ),
               trailing: Text(
@@ -616,7 +626,7 @@ healthPopup(Device device) async {
             ),
             ListTile(
               title: Text(
-                "Disinfection UVC Tube",
+                "Disinfection UVC Tubes",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: LinearPercentIndicator(

@@ -317,14 +317,14 @@ class WeekSelector extends StatelessWidget {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: isActive ? Colors.grey[400] : Colors.grey[200],
+        color: isActive ? Colors.grey[600] : Colors.grey[200],
         shape: BoxShape.circle,
       ),
       child: Center(
           child: Text(
         week,
         style: TextStyle(
-            color: isActive ? Colors.grey[100] : Colors.grey[500],
+            color: isActive ? Colors.grey[100] : Colors.grey[600],
             fontSize: 16),
         textAlign: TextAlign.center,
       )),
